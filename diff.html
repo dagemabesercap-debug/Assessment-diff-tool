@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cybersecurity Assessment Diff Tool Dashboard: Visualizing year-over-year shifts, score regressions, improvements, and checklist changes.">
+  <title>Cybersecurity Assessment Diff Tool Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="glass-panel" style="padding: 20px 32px; border-radius: 16px; margin-bottom: 24px;">
+      <div class="logo-section">
+        <h1>Cybersecurity Assessment Diff Tool</h1>
+        <p>Comparing Serent Capital - Studio Designer Assessment (2025 vs 2026)</p>
+      </div>
+      <div>
+        <span class="delta-badge negative" id="global-delta-header">
+          <span style="font-size: 16px;">↓</span> -20 Points Drop
+        </span>
+      </div>
+    </header>
+
+    <!-- Score & Category Metrics -->
+    <section class="hero-grid">
+      <!-- Radial Gauge Widget -->
+      <div class="glass-panel score-widget">
+        <div class="gauge-container">
+          <svg class="gauge-svg" viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7c3aed" />
+                <stop offset="100%" stop-color="#f43f5e" />
+              </linearGradient>
+            </defs>
+            <circle class="gauge-bg" cx="60" cy="60" r="50" />
+            <circle class="gauge-progress" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16" id="gauge-circle" />
+          </svg>
+          <div class="gauge-value">
+            <div class="gauge-number" id="gauge-current-val">63</div>
+            <div class="gauge-label">2026 Score</div>
+          </div>
+        </div>
+        <div>
+          <span class="delta-badge negative" id="hero-delta-badge">
+            <span style="font-size: 16px;">↓</span> -20 Delta
+          </span>
+        </div>
+        <div class="score-meta">
+          <div class="score-meta-item">
+            <span>2025 Score</span>
+            <strong style="color: var(--text-primary);">83</strong>
+          </div>
+          <div style="width: 1px; background: rgba(255,255,255,0.08); align-self: stretch;"></div>
+          <div class="score-meta-item">
+            <span>Proficiency</span>
+            <strong style="color: var(--warning);" id="hero-proficiency-label">Moderate</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Performance Cards -->
+      <div class="categories-grid" id="categories-container">
+        <!-- Dynamically rendered -->
+      </div>
+    </section>
+
+    <!-- Filter & Search Controls -->
+    <section class="glass-panel filter-bar">
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="search-box" placeholder="Search questions, comments, or attachments...">
+      </div>
+      <div class="filter-groups">
+        <button class="filter-btn active" data-filter="all">All Questions</button>
+        <button class="filter-btn" data-filter="changed">Changed Only</button>
+        <button class="filter-btn" data-filter="new">New in 2026</button>
+        <button class="filter-btn" data-filter="regressions">Regressions</button>
+      </div>
+    </section>
+
+    <!-- Detailed Alignment Tree -->
+    <section class="tree-container" id="questions-tree">
+      <!-- Dynamically rendered nodes -->
+    </section>
+  </div>
+
+  <!-- Load fallbacks and main app logic -->
+  <script src="diff_report_data.js"></script>
+  <script src="diff_app.js"></script>
+</body>
+</html>

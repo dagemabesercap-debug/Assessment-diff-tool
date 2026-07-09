@@ -1,0 +1,590 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"math"
+	"os"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
+
+	"github.com/dslipak/pdf"
+)
+
+type Option struct {
+	Text    string `json:"text"`
+	Checked bool   `json:"checked"`
+}
+
+type Evidence struct {
+	Text    string `json:"text"`
+	Checked bool   `json:"checked"`
+}
+
+type ParsedQuestion struct {
+	Q      Question
+	StartY float64
+	EndY   float64
+}
+
+type Question struct {
+	Number       string     `json:"number"`
+	Text         string     `json:"text"`
+	Category     string     `json:"category"`
+	Score        string     `json:"score,omitempty"`
+	Options      []Option   `json:"options"`
+	Evidence     []Evidence `json:"evidence"`
+	Attachments  []string   `json:"attachments"`
+	FreeResponse string     `json:"freeresponse,omitempty"`
+	Comments     string     `json:"comments,omitempty"`
+}
+
+type TextElement struct {
+	Text string
+	X    float64
+	Y    float64
+}
+
+type PageData struct {
+	LeftCol  []TextElement
+	RightCol []TextElement
+}
+
+type pendingQuestion struct {
+	Number   string
+	Parts    []string
+	Category string
+	Score    string
+	StartY   float64
+}
+
+var (
+	// A real question number in this template is formatted as "4. Question text".
+	// Whitespace after the dot prevents decimal scores such as "5.0" from matching.
+	qNumRegex        = regexp.MustCompile(`^\s*(\d+)\.\s+(.+)$`)
+	scoreLineRegex   = regexp.MustCompile(`(?i)^\s*(Score:\s*\d+(?:\.\d+)?|Not Scored|N/A|\d+\.\d+)\s*$`)
+	trailingScoreRe  = regexp.MustCompile(`(?i)\s+(Score:\s*\d+(?:\.\d+)?|Not Scored|N/A|\d+\.\d+)\s*$`)
+	categorySuffixRe = regexp.MustCompile(`(?i)\s+(N/A|Score:\s*\d+(?:\.\d+)?|\d+(?:\.\d+)?)\s*$`)
+
+	// This extra guard prevents numbered answer text, such as "1. GDPR", from
+	// being treated as a question start.
+	questionLeadRe = regexp.MustCompile(`(?i)^(please|which|what|how|who|where|when|why|is|are|do|does|did|has|have|can|should|select|list|identify|describe|indicate|provide|confirm|upload|enter|name|explain|state|for|to)\b`)
+)
+
+var categoryNames = map[string]string{
+	"COMPANY INFORMATION":       "COMPANY INFORMATION",
+	"SECURITY TOOLS":            "SECURITY TOOLS",
+	"ORGANIZATION AND PLANNING": "ORGANIZATION AND PLANNING",
+	"TECHNICAL AND TOOLING":     "TECHNICAL AND TOOLING",
+	"SECURE PROCESS":            "SECURE PROCESS",
+	"RECURRING HYGIENE":         "RECURRING HYGIENE",
+	"VALIDATION CALL":           "VALIDATION CALL",
+}
+
+func main() {
+	files := []string{
+		"Serent Capital - Studio Designer (2025).pdf",
+		"Serent Capital - Studio Designer (2026).pdf",
+	}
+
+	for _, file := range files {
+		outputPath := file + ".json"
+		fmt.Printf("Parsing %s to JSON...\n", file)
+		questions, err := parsePDF(resolvePDFPath(file))
+		if err != nil {
+			fmt.Printf("Error parsing %s: %v\n", file, err)
+			continue
+		}
+
+		jsonData, err := json.MarshalIndent(questions, "", "  ")
+		if err != nil {
+			fmt.Printf("Error marshalling JSON: %v\n", err)
+			continue
+		}
+
+		err = os.WriteFile(outputPath, jsonData, 0644)
+		if err != nil {
+			fmt.Printf("Error writing output file: %v\n", err)
+			continue
+		}
+		fmt.Printf("Saved %d questions to %s\n", len(questions), outputPath)
+	}
+}
+
+func resolvePDFPath(file string) string {
+	candidates := []string{file, "./" + file, "../" + file}
+	for _, candidate := range candidates {
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+	}
+	return file
+}
+
+func parsePDF(path string) ([]Question, error) {
+	r, err := pdf.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var questions []Question
+	currentCategory := "COMPANY INFORMATION"
+	lastQuestionNumber := 0
+	numPages := r.NumPage()
+
+	for pageNum := 1; pageNum <= numPages; pageNum++ {
+		page := r.Page(pageNum)
+		if page.V.IsNull() {
+			continue
+		}
+
+		// Group and sort text elements.
+		var elements []TextElement
+		for _, t := range page.Content().Text {
+			// Filter out header/footer.
+			if t.Y > 760 || t.Y < 40 {
+				continue
+			}
+			elements = append(elements, TextElement{
+				Text: t.S,
+				X:    t.X,
+				Y:    t.Y,
+			})
+		}
+
+		// Group elements into visual lines by Y coordinate.
+		var lines [][]TextElement
+		for _, el := range elements {
+			found := false
+			for i, line := range lines {
+				if math.Abs(line[0].Y-el.Y) < 4.5 {
+					lines[i] = append(line, el)
+					found = true
+					break
+				}
+			}
+			if !found {
+				lines = append(lines, []TextElement{el})
+			}
+		}
+
+		// Sort lines by Y descending: top of page to bottom.
+		sort.Slice(lines, func(i, j int) bool {
+			return lines[i][0].Y > lines[j][0].Y
+		})
+
+		// Separate each line into left and right columns.
+		var leftColumnText []TextElement
+		var rightColumnText []TextElement
+
+		for _, line := range lines {
+			// Sort line elements by X ascending: left to right.
+			sort.Slice(line, func(i, j int) bool {
+				return line[i].X < line[j].X
+			})
+
+			var leftText, rightText string
+			leftX := -1.0
+			rightX := -1.0
+
+			for _, el := range line {
+				if el.X < 200 {
+					if leftX == -1 {
+						leftX = el.X
+					}
+					leftText += el.Text
+				} else {
+					if rightX == -1 {
+						rightX = el.X
+					}
+					rightText += el.Text
+				}
+			}
+
+			leftText = strings.TrimSpace(leftText)
+			rightText = strings.TrimSpace(rightText)
+
+			if leftText != "" {
+				leftColumnText = append(leftColumnText, TextElement{
+					Text: leftText,
+					X:    leftX,
+					Y:    line[0].Y,
+				})
+			}
+			if rightText != "" {
+				rightColumnText = append(rightColumnText, TextElement{
+					Text: rightText,
+					X:    rightX,
+					Y:    line[0].Y,
+				})
+			}
+		}
+
+		// Parse questions from the left column. Questions can wrap across many
+		// extracted text lines, so a pending question stays open until a structural
+		// boundary is reached: next question, score line, respondent comments,
+		// category header, or page end.
+		var pageParsedQuestions []ParsedQuestion
+		var commentsBlock []TextElement
+		var currentQ *pendingQuestion
+		inComments := false
+		pendingCategoryPrefix := ""
+
+		flushQuestion := func() {
+			if currentQ == nil {
+				return
+			}
+
+			qText := cleanJoinedText(strings.Join(currentQ.Parts, " "))
+			qText, score := splitTrailingScore(qText)
+			if currentQ.Score == "" && score != "" {
+				currentQ.Score = score
+			}
+
+			pageParsedQuestions = append(pageParsedQuestions, ParsedQuestion{
+				Q: Question{
+					Number:   currentQ.Number,
+					Text:     qText,
+					Category: currentQ.Category,
+					Score:    strings.TrimSpace(currentQ.Score),
+				},
+				StartY: currentQ.StartY,
+			})
+			currentQ = nil
+		}
+
+		setLastQuestionEndY := func(endY float64) {
+			if len(pageParsedQuestions) == 0 {
+				return
+			}
+			last := &pageParsedQuestions[len(pageParsedQuestions)-1]
+			if last.EndY == 0 {
+				last.EndY = endY
+			}
+		}
+
+		for _, el := range leftColumnText {
+			text := strings.TrimSpace(el.Text)
+			if text == "" {
+				continue
+			}
+
+			if pendingCategoryPrefix != "" {
+				if category, ok := categoryHeader(pendingCategoryPrefix + " " + text); ok {
+					flushQuestion()
+					setLastQuestionEndY(el.Y)
+					currentCategory = category
+					pendingCategoryPrefix = ""
+					inComments = false
+					continue
+				}
+				pendingCategoryPrefix = ""
+			}
+
+			if prefix, ok := categoryPrefix(text); ok {
+				flushQuestion()
+				setLastQuestionEndY(el.Y)
+				pendingCategoryPrefix = prefix
+				inComments = false
+				continue
+			}
+
+			if category, ok := categoryHeader(text); ok {
+				flushQuestion()
+				setLastQuestionEndY(el.Y)
+				currentCategory = category
+				inComments = false
+				continue
+			}
+
+			if strings.HasPrefix(strings.ToUpper(text), "RESPONDENT COMMENTS") {
+				flushQuestion()
+				inComments = true
+				continue
+			}
+
+			if matches, qNum, ok := detectQuestionStart(el, lastQuestionNumber); ok {
+				flushQuestion()
+				setLastQuestionEndY(el.Y)
+				inComments = false
+				lastQuestionNumber = qNum
+
+				qText, score := splitTrailingScore(matches[2])
+				currentQ = &pendingQuestion{
+					Number:   matches[1],
+					Parts:    []string{qText},
+					Category: currentCategory,
+					Score:    score,
+					StartY:   el.Y,
+				}
+				continue
+			}
+
+			if scoreLineRegex.MatchString(text) {
+				if currentQ != nil {
+					currentQ.Score = text
+					flushQuestion()
+				}
+				continue
+			}
+
+			if inComments {
+				commentsBlock = append(commentsBlock, el)
+				continue
+			}
+
+			if currentQ != nil {
+				qText, score := splitTrailingScore(text)
+				if qText != "" {
+					currentQ.Parts = append(currentQ.Parts, qText)
+				}
+				if score != "" {
+					currentQ.Score = score
+				}
+			}
+		}
+
+		flushQuestion()
+
+		if len(pageParsedQuestions) == 0 {
+			continue
+		}
+
+		// Fallback: if a question was flushed by score/comments before its lower
+		// Y-bound was known, use the next question start as the lower boundary.
+		for i := 0; i < len(pageParsedQuestions)-1; i++ {
+			if pageParsedQuestions[i].EndY == 0 {
+				pageParsedQuestions[i].EndY = pageParsedQuestions[i+1].StartY
+			}
+		}
+
+		// Assign checkbox options, evidence, and attachments from the right column.
+		// For a question at StartY, controls lie between StartY and EndY.
+		for i := 0; i < len(pageParsedQuestions); i++ {
+			parsed := &pageParsedQuestions[i]
+			q := &parsed.Q
+			startY := parsed.StartY
+			endY := parsed.EndY
+
+			var qElements []TextElement
+			for _, re := range rightColumnText {
+				// Use a small buffer above startY to capture aligned elements.
+				if re.Y <= (startY+5.0) && re.Y > endY {
+					qElements = append(qElements, re)
+				}
+			}
+
+			var currentOptionText string
+			var optionChecked bool
+			var inOption bool
+
+			var currentEvidenceText string
+			var evidenceChecked bool
+			var inEvidence bool
+
+			for _, qe := range qElements {
+				txt := strings.TrimSpace(qe.Text)
+				if txt == "" {
+					continue
+				}
+
+				// Detect attachment.
+				if strings.HasPrefix(txt, "") || strings.HasPrefix(txt, "Attachment:") {
+					cleanTxt := strings.TrimPrefix(txt, "")
+					cleanTxt = strings.TrimPrefix(cleanTxt, "Attachment:")
+					cleanTxt = strings.TrimSpace(cleanTxt)
+					if cleanTxt != "" {
+						files := strings.Split(cleanTxt, ",")
+						for _, f := range files {
+							if attachment := strings.TrimSpace(f); attachment != "" {
+								q.Attachments = append(q.Attachments, attachment)
+							}
+						}
+					}
+					continue
+				}
+
+				// Free-form response for non-checkbox questions.
+				if strings.HasPrefix(txt, "Free-Form Response:") {
+					resp := strings.TrimPrefix(txt, "Free-Form Response:")
+					resp = strings.TrimSpace(resp)
+					if resp != "" {
+						q.Comments = resp
+					}
+					continue
+				}
+
+				// Detect standard checkbox option or evidence checkbox.
+				isOptChecked := strings.HasPrefix(txt, "")
+				isOptUnchecked := strings.HasPrefix(txt, "")
+
+				if isOptChecked || isOptUnchecked {
+					if inOption {
+						q.Options = append(q.Options, Option{
+							Text:    cleanJoinedText(currentOptionText),
+							Checked: optionChecked,
+						})
+						inOption = false
+					}
+					if inEvidence {
+						q.Evidence = append(q.Evidence, Evidence{
+							Text:    cleanJoinedText(currentEvidenceText),
+							Checked: evidenceChecked,
+						})
+						inEvidence = false
+					}
+
+					cleanText := strings.TrimPrefix(txt, "")
+					cleanText = strings.TrimPrefix(cleanText, "")
+					cleanText = strings.TrimSpace(cleanText)
+
+					if strings.HasPrefix(cleanText, "Required evidence:") || strings.HasPrefix(cleanText, "Required Evidence:") {
+						inEvidence = true
+						evidenceChecked = isOptChecked
+						currentEvidenceText = strings.TrimPrefix(cleanText, "Required evidence:")
+						currentEvidenceText = strings.TrimPrefix(currentEvidenceText, "Required Evidence:")
+						currentEvidenceText = strings.TrimSpace(currentEvidenceText)
+					} else {
+						inOption = true
+						optionChecked = isOptChecked
+						currentOptionText = cleanText
+					}
+				} else {
+					if inEvidence {
+						currentEvidenceText += " " + txt
+					} else if inOption {
+						currentOptionText += " " + txt
+					} else if len(q.Options) == 0 && len(q.Evidence) == 0 {
+						if q.Comments != "" {
+							q.Comments += " " + txt
+						} else {
+							q.Comments = txt
+						}
+					}
+				}
+			}
+
+			if inOption {
+				q.Options = append(q.Options, Option{
+					Text:    cleanJoinedText(currentOptionText),
+					Checked: optionChecked,
+				})
+			}
+			if inEvidence {
+				q.Evidence = append(q.Evidence, Evidence{
+					Text:    cleanJoinedText(currentEvidenceText),
+					Checked: evidenceChecked,
+				})
+			}
+
+			// Align respondent comments for this question.
+			var qComments []string
+			for _, ce := range commentsBlock {
+				if ce.Y <= (startY+5.0) && ce.Y > endY {
+					qComments = append(qComments, ce.Text)
+				}
+			}
+			if len(qComments) > 0 {
+				joinedComments := cleanJoinedText(strings.Join(qComments, " "))
+				joinedComments = strings.TrimPrefix(joinedComments, "-")
+				joinedComments = strings.TrimSpace(joinedComments)
+				if q.Comments != "" {
+					q.Comments += "\n" + joinedComments
+				} else {
+					q.Comments = joinedComments
+				}
+			}
+		}
+
+		for _, parsed := range pageParsedQuestions {
+			questions = append(questions, parsed.Q)
+		}
+	}
+
+	for i := range questions {
+		q := &questions[i]
+		q.Text = cleanJoinedText(q.Text)
+		q.Comments = strings.TrimSpace(q.Comments)
+	}
+
+	return questions, nil
+}
+
+func detectQuestionStart(el TextElement, lastQuestionNumber int) ([]string, int, bool) {
+	matches := qNumRegex.FindStringSubmatch(strings.TrimSpace(el.Text))
+	if matches == nil {
+		return nil, 0, false
+	}
+
+	qNum, err := strconv.Atoi(matches[1])
+	if err != nil || qNum <= lastQuestionNumber {
+		return nil, 0, false
+	}
+
+	// PortfolioView question numbers in this report are around x=46. Keeping a
+	// narrow guard rejects respondent comments and score lines that are slightly
+	// indented to the right. Adjust if the source template changes.
+	if el.X < 40.0 || el.X > 52.5 {
+		return nil, 0, false
+	}
+
+	qText, _ := splitTrailingScore(matches[2])
+	if !questionLeadRe.MatchString(strings.TrimSpace(qText)) {
+		return nil, 0, false
+	}
+
+	return matches, qNum, true
+}
+
+func splitTrailingScore(text string) (string, string) {
+	text = strings.TrimSpace(text)
+	match := trailingScoreRe.FindStringSubmatchIndex(text)
+	if match == nil {
+		return text, ""
+	}
+
+	fullStart := match[0]
+	scoreStart := match[2]
+	scoreEnd := match[3]
+
+	cleanText := strings.TrimSpace(text[:fullStart])
+	score := strings.TrimSpace(text[scoreStart:scoreEnd])
+	return cleanText, score
+}
+
+func categoryPrefix(text string) (string, bool) {
+	switch normalizeHeaderText(text) {
+	case "RECURRING", "VALIDATION":
+		return normalizeHeaderText(text), true
+	default:
+		return "", false
+	}
+}
+
+func categoryHeader(text string) (string, bool) {
+	category, ok := categoryNames[normalizeHeaderText(text)]
+	return category, ok
+}
+
+func normalizeHeaderText(text string) string {
+	text = strings.ToUpper(strings.Join(strings.Fields(text), " "))
+	text = categorySuffixRe.ReplaceAllString(text, "")
+	return strings.TrimSpace(text)
+}
+
+func cleanJoinedText(text string) string {
+	text = strings.Join(strings.Fields(text), " ")
+	replacer := strings.NewReplacer(
+		" .", ".",
+		" ,", ",",
+		" ;", ";",
+		" :", ":",
+		" ?", "?",
+		" !", "!",
+		" )", ")",
+		"( ", "(",
+	)
+	return strings.TrimSpace(replacer.Replace(text))
+}

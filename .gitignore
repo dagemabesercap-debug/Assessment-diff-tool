@@ -1,0 +1,11 @@
+# Local agent/MCP secrets
+.linear-mcp.env.local
+.agents/.env.local
+.agents/*.local.json
+
+# Local portable tooling
+.tools/
+.cache/
+
+# Runtime debug logs
+logs/

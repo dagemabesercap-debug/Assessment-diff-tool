@@ -1,0 +1,2251 @@
+[
+  {
+    "number": "1",
+    "text": "Please list any data centers including address or upload a listing to the data room.",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "N/A. We use cloud providers, listed in the next question."
+  },
+  {
+    "number": "2",
+    "text": "Please list any cloud providers and regions in use.",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Infrastructure is hosted in AWS, in the Oregon (US-West-2) region, with some backups replicated to the Virginia (US-East-1) region. Also use CloudFlare for WAF, and Microsoft Defender Antivirus hosted in Azure. Google used for translation."
+  },
+  {
+    "number": "3",
+    "text": "Please provide a list of all regions where the business operates.",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "USA"
+  },
+  {
+    "number": "4",
+    "text": "Please provide a list and rationale for all applicable regulatory requirements for the organization. (e.g. California Privacy Rights Act or other U.S. state privacy laws, General Data Protection Regulation or other international privacy or security laws, New York Department of Financial Services Cybersecurity Regulation, Financial Industry Regulatory Authority (FINRA), Health Insurance Portability and Accountability Act, etc.)",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "We deal with student data, so we have to be compliant with FERPA, COPPA, PPRA, etc."
+  },
+  {
+    "number": "5",
+    "text": "Please provide a list of all applicable compliance certifications or security standards. (e.g. Payment Card Industry Data Security Standard, ISO, SOC, NIST, etc.). Please upload the latest two years o audit reports for applicable certifications or standards to the data room.",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": [
+      "Progress Learning - 2025 SOC 2 Type 2 Report.pdf"
+    ],
+    "comments": "SOC 2 - We started having SOC audits in 2024. f"
+  },
+  {
+    "number": "6",
+    "text": "Please provide a list of IT and Security service providers in use (e.g. Managed IT provider, Managed Security Service Provider).",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "None"
+  },
+  {
+    "number": "7",
+    "text": "Please provide a listing of key applications used by the company.",
+    "category": "COMPANY INFORMATION",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Google workspace, Jira, Slack, Zoom, Salesforce, Paycor, GitHub"
+  },
+  {
+    "number": "8",
+    "text": "Please list the tool(s) in place to manage the network firewall(s).",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "AWS Security Groups, AWS Network Firewall"
+  },
+  {
+    "number": "9",
+    "text": "Please list the tool(s) in place to manage intrusion detection / prevention.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "AWS GuardDuty, Microsoft Defender"
+  },
+  {
+    "number": "10",
+    "text": "Please list the tool(s) in place to manage remote access.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "OpenVPN, with 2FA, and using Active Directory groups for permissions"
+  },
+  {
+    "number": "11",
+    "text": "Please list the tool(s) in place to manage multi-factor authentication.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "TOTP on both OpenVPN and AWS Console Login through an Authenticator app"
+  },
+  {
+    "number": "12",
+    "text": "Please list the email security gateway tool(s) in place.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Google Workspace"
+  },
+  {
+    "number": "13",
+    "text": "Please list the tool(s) in place to manage identity and access management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "AWS IAM and Active Directory"
+  },
+  {
+    "number": "14",
+    "text": "Please list the tool(s) in place to manage privileged access management",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "IAM Roles and Active Directory Security Groups. We do not use a tool for JIT privilege elevation."
+  },
+  {
+    "number": "15",
+    "text": "Please list the tool(s) in place to manage endpoint device encryption",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": ", JumpCloud"
+  },
+  {
+    "number": "16",
+    "text": "Please list the tool(s) in place to manage endpoint protection (antivirus or EDR).",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "BitDefender GravityZone, Microsoft Defender"
+  },
+  {
+    "number": "17",
+    "text": "Please list the tool(s) in place to manage server disk / device encryption.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "EC2 Instances have EBS volumes encrypted in AWS."
+  },
+  {
+    "number": "18",
+    "text": "Please list the tool(s) in place to manage server protection (antivirus or EDR)",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Microsoft Defender"
+  },
+  {
+    "number": "19",
+    "text": "Please list the tool(s) in place to manage mobile device management of company-provided devices",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "JumpCloud"
+  },
+  {
+    "number": "20",
+    "text": "Please list the tool(s) in place to manage mobile device management of personal user devices.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Google Device Policy, JumpCloud"
+  },
+  {
+    "number": "21",
+    "text": "Please list the tool(s) in place to manage endpoint patch management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "JumpCloud"
+  },
+  {
+    "number": "22",
+    "text": "Please list the tool(s) in place to manage server and network patch management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Amazon Inspector, Microsoft Defender, combined with manual patching of OS and applications."
+  },
+  {
+    "number": "23",
+    "text": "Please list the tool(s) in place to manage server and data backup.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "AWS Backup for S3, EC2. SQL is backed up to S3 via SQL agent jobs."
+  },
+  {
+    "number": "24",
+    "text": "Please list the tool(s) in place to manage network vulnerability management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "AWS Security Hub generates findings on ports open via Security Groups."
+  },
+  {
+    "number": "25",
+    "text": "Please list the tool(s) in place to manage application vulnerability management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Amazon Inspector"
+  },
+  {
+    "number": "26",
+    "text": "Please list the tool(s) in place to manage log management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "IIS logs in Amazon Athena. Security logs in CloudWatch and OpenSearch SIEM."
+  },
+  {
+    "number": "27",
+    "text": "Please list the tool(s) in place to manage security information and event management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "SIEM on Amazon OpenSearch Service"
+  },
+  {
+    "number": "28",
+    "text": "Please list the vendor used for independent penetration testing.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "Stroz Friedberg"
+  },
+  {
+    "number": "29",
+    "text": "Please list the tool(s) in place to manage security training.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "KnowBe4"
+  },
+  {
+    "number": "30",
+    "text": "Please list the tool(s) in place to manage simulated phishing testing.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "KnowBe4"
+  },
+  {
+    "number": "31",
+    "text": "Please list any third-party managetd security providers in use and the type of services performed.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "None"
+  },
+  {
+    "number": "32",
+    "text": "Please list the tool(s) in place for cloud security posture management.",
+    "category": "SECURITY TOOLS",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "AWS Security Hub"
+  },
+  {
+    "number": "33",
+    "text": "Which of the following are in place relating to the assignment of responsibilities for security?",
+    "category": "ORGANIZATION AND PLANNING",
+    "score": "1.0",
+    "options": [
+      {
+        "text": "Responsibilities have not been assigned for the security program.",
+        "checked": true
+      },
+      {
+        "text": "Named individual(s) are in place with ultimate responsibility and accountability for the security program.",
+        "checked": true
+      },
+      {
+        "text": "Which of the following security responsibilities have been assigned?",
+        "checked": true
+      },
+      {
+        "text": "- overall roadmap and program oversight,",
+        "checked": true
+      },
+      {
+        "text": "- program budget management or oversight,",
+        "checked": true
+      },
+      {
+        "text": "- security policy and procedure management,",
+        "checked": true
+      },
+      {
+        "text": "- cyber insurance accountability.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other. Please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: The names of the individual(s) responsible for the security program. Please check when listed below or uploaded to the data room.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A listing of the roles and responsibilities. Please check when listed below or uploaded to the data room.",
+        "checked": true
+      }
+    ],
+    "attachments": null,
+    "comments": "Terry Mitchum (CTO) is responsible for security. Spencer Hatch (CFO) is responsible for insurance."
+  },
+  {
+    "number": "34",
+    "text": "Which of the following are in place to ensure data privacy accountability is assigned and a regular schedule of maintenance activities is performed to facilitate compliance through regulatory and company environment changes?",
+    "category": "ORGANIZATION AND PLANNING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "The privacy policy is approved by the person with overall privacy responsibility.",
+        "checked": true
+      },
+      {
+        "text": "A review of applicability of regulatory changes is performed at least annually by the individual responsible for data privacy along with inside or outside counsel.",
+        "checked": true
+      },
+      {
+        "text": "A review and confirmation of data processing activities is performed.",
+        "checked": true
+      },
+      {
+        "text": "A review and approval of the company's privacy policy is performed.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or alternative controls are in place. Please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required Evidence: The name of the individual(s) ultimately accountable for privacy.",
+        "checked": true
+      },
+      {
+        "text": "Required Evidence: A copy of the companyʼs privacy policy.",
+        "checked": true
+      },
+      {
+        "text": "Required Evidence: A schedule of activities performed to maintain the privacy program including owners.",
+        "checked": false
+      }
+    ],
+    "attachments": null,
+    "comments": "Terry Mitchum(CTO) and Spencer Hatch(CFO) are responsible for privacy. Privacy Policy - https://progresslearning.com/product- privacy-policy/"
+  },
+  {
+    "number": "35",
+    "text": "Please indicate which of the following apply relating to cybersecurity insurance.",
+    "category": "ORGANIZATION AND PLANNING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "The organization does not maintain cyber liability insurance.",
+        "checked": false
+      },
+      {
+        "text": "The organization maintains cybersecurity insurance.",
+        "checked": true
+      },
+      {
+        "text": "There are no policy exclusions or all policy exclusions have been addressed through appropriate risk mitigation measures. Please list any exclusions that have not been mitigated.",
+        "checked": true
+      },
+      {
+        "text": "Select all of the following that are covered in the policy.",
+        "checked": false
+      },
+      {
+        "text": "– data breach and privacy",
+        "checked": true
+      },
+      {
+        "text": "– network security",
+        "checked": true
+      },
+      {
+        "text": "– business interruption",
+        "checked": true
+      },
+      {
+        "text": "– cyber extortion",
+        "checked": true
+      },
+      {
+        "text": "– crisis management",
+        "checked": true
+      },
+      {
+        "text": "– support for public relations",
+        "checked": true
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: The companyʼs current cyber insurance policy including any exclusions to the policy coverage. Please check when uploaded to the data room.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Evidence that any resolvable exclusion criteria have been reviewed and are remediated. Please check when uploaded to the data room.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "Progress Learning Cyber Insurance Cert 2026.pdf"
+    ]
+  },
+  {
+    "number": "36",
+    "text": "Which of the following are in place relating to the usage of generative AI in the organization?",
+    "category": "ORGANIZATION AND PLANNING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "An AI usage policy exists.",
+        "checked": true
+      },
+      {
+        "text": "Which of the following are included in the AI policy?",
+        "checked": false
+      },
+      {
+        "text": "- A statement specifying particular usage is explicitly allowed, and it is denied by default.",
+        "checked": true
+      },
+      {
+        "text": "- Explicit forbidding of uploading company confidential, internal use, or intellectual property (including code) to third-party services without explicit approval.",
+        "checked": true
+      },
+      {
+        "text": "The AI policy is signed off.",
+        "checked": true
+      },
+      {
+        "text": "Review of applicability of regulatory changes is performed at least annually by the individual responsible for AI along with inside or outside counsel.",
+        "checked": true
+      },
+      {
+        "text": "A periodic review and confirmation of GenAI usage activities is performed.",
+        "checked": true
+      },
+      {
+        "text": "An AI usage policy and practices are not in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: The names of the individual(s) accountable for generative AI governance. Please check when uploaded.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A copy of the companyʼs generative AI policy.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A schedule of activities performed to maintain the AI policy compliance including owners. Score: 68",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AI Governance Policy.pdf"
+    ]
+  },
+  {
+    "number": "37",
+    "text": "Please indicate which of the following are in place to support backup management and testing.",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "4.2",
+    "options": [
+      {
+        "text": "We use only third-party systems and the providers manage backups.",
+        "checked": false
+      },
+      {
+        "text": "Backups occur at an appropriate recurrence based on application or data criticality,",
+        "checked": true
+      },
+      {
+        "text": "Backups are successfully completing,",
+        "checked": true
+      },
+      {
+        "text": "Backups are encrypted at rest.",
+        "checked": true
+      },
+      {
+        "text": "Backups are immutable and cannot be deleted, altered, or overwritten OR backups are stored in a secure location offsite that are inaccessible from the primary hosting location.",
+        "checked": false
+      },
+      {
+        "text": "Full test restoration of backups is performed at least annually.",
+        "checked": true
+      },
+      {
+        "text": "None of the above are in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A list of business-critical systems and applications that are self-managed (on-premise, data center, or public cloud). Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Backup schedule, configuration, and storage locations of backups for business-critical applications and systems, including immutability configuration. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Historical backup job reports for business-critical applications and systems. Please check when provided. Done.xlsx",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "ABAttCacKhUmPe_nJOt: BB_uRsEinPeOsRsT C_r2it0ic2a6l- A0p5p-1li9c.axtlisoxn",
+      "BCaocpkyu opfs 1 (11-)2.x0l2sx5",
+      "1 1C0o6p-yA onfnual Backup Restore-"
+    ],
+    "comments": "Backups are not editable, but are deletable. I don't have a way to lock myself out of being able to do so."
+  },
+  {
+    "number": "38",
+    "text": "Which of the following are in place to support multi-factor authentication for critical applications?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "MFA is not in place for critical applications",
+        "checked": false
+      },
+      {
+        "text": "A systems inventory is maintained that identifies critical systems.",
+        "checked": true
+      },
+      {
+        "text": "MFA is enabled and enforced for critical systems via SSO/SAML or within the system itself.",
+        "checked": true
+      },
+      {
+        "text": "MFA authentication is enforced for every administrative access attempt.",
+        "checked": true
+      },
+      {
+        "text": "MFA authentication is required a minimum of every 72 hours for non- administrative access or upon ˮimpossible travelˮ.",
+        "checked": true
+      },
+      {
+        "text": "There are no exceptions to use of MFA or exceptions are documented and approved by the individual designated to have ultimate security accountability.",
+        "checked": true
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A list of all back-office, corporate, and hosted systems with business-critical systems identified and the type of MFA enabled for regular users and administrative users (e.g. Netsuite, SalesForce, Amazon AWS). Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: For systems with MFA enabled, provide the configuration and policy. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: For systems enabled with MFA, provide a list of users showing mode of authentication. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Provide a list of users, role, or team-based exceptions to MFA including rationale and approval. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AIAtMtaUchsmeresn_Lt:i sVtP_2N0 R2e6q0u5i2re0s.c MsvF",
+      "A A.pDnUgs",
+      "e ArsW_LSi sIAt_M20 U2s6e0r5s 2M0F.cAs.vpng"
+    ],
+    "comments": "All systems are accessed either via AWS or VPN / RDP. Both the AWS console and the VPN server require MFA."
+  },
+  {
+    "number": "39",
+    "text": "Which of the following are in place to support email security, filtering, and protection to enhance email security?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "1.0",
+    "options": [
+      {
+        "text": "We do not use an enhanced email scanning system or similar tools to inspect and filter email content and attachments.",
+        "checked": true
+      },
+      {
+        "text": "We use an email gateway tool or similar enhanced level of scanning to inspect email content and attachments.",
+        "checked": false
+      },
+      {
+        "text": "Email policy configurations are enforced across the organization.",
+        "checked": false
+      },
+      {
+        "text": "Exceptions to email inspection are documented including the rationale and are approved by the individual designated to have ultimate security accountability.",
+        "checked": false
+      },
+      {
+        "text": "Warning banners are implemented for external emails.",
+        "checked": true
+      },
+      {
+        "text": "External email auto-forwarding of a users email account is disabled or ​ alerts are sent ​if a email rule is created.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of the phishing protection tooling console(s), policy configuration, and event logs. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A list of users, role, or team-based exceptions to email inspection including rationale and approval. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A historical report of blocked versus allowed email over the past 6 months. Please check when provided.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "AEvttiadcehnmcee3n.tp: nEgmailGatewayProtection - Evidence1.png",
+      "EmailGatewayProtection -"
+    ],
+    "comments": "No Exceptions to required evidence2"
+  },
+  {
+    "number": "40",
+    "text": "Which of the following apply to the management of bring-your-own- device (BYOD) user devices?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "4.2",
+    "options": [
+      {
+        "text": "The use personal (BYOD) devices is not permitted and mechanisms are in place to prevent connection to applications or networks.",
+        "checked": false
+      },
+      {
+        "text": "Tools are not utilized to manage BYOD user devices.",
+        "checked": false
+      },
+      {
+        "text": "A tool is in place to centrally manage personal devices that connect to company systems and networks.",
+        "checked": true
+      },
+      {
+        "text": "Encryption-at-rest is enforced for all devices in management.",
+        "checked": true
+      },
+      {
+        "text": "Strong passcodes are enforced to unlock devices.",
+        "checked": true
+      },
+      {
+        "text": "Software update and patching policies are enforced.",
+        "checked": true
+      },
+      {
+        "text": "Audit and event logging is enabled and are retained for at least 90 days.",
+        "checked": false
+      },
+      {
+        "text": "Exceptions to bring-your-own-device management are documented and approved by the individual designated to have ultimate security accountability.",
+        "checked": true
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Screenshots or export of the end-user device management tooling console(s), policy configuration, and the central console event summary or audit log. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A list of devices enrolled in mobile device management. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Compliance report against the defined policy. Please check when provided.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "AMtatancahgmemenetn: tc Erovsidselankcee-1b.1y.podngm",
+      "a Cnraogsesmlaeknet--BeYvOidDeMncaen2a-g2e0m2e6n0t6_2E2viTd2e1n0c0e112.2Z..ccssvv",
+      "BYOD"
+    ],
+    "comments": "Required Evidence 3: Tooling does not provide compliance reporting against installed policies natively."
+  },
+  {
+    "number": "41",
+    "text": "Which of the following apply to endpoint protection for end-user devices?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "Endpoint protection is not in place.",
+        "checked": false
+      },
+      {
+        "text": "Endpoint protection management is centralized (even if across multiple vendors).",
+        "checked": true
+      },
+      {
+        "text": "Software and signature updates occur automatically and at least every 24 hours.",
+        "checked": true
+      },
+      {
+        "text": "There are no exceptions to endpoint protection for end-user devices OR exceptions to endpoint protection on servers are documented and approved by the individual designated to have ultimate security accountability and have risk-mitigating compensating controls in place",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Screenshots or export of the endpoint protection tooling console(s). Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Enrolled end-user device and server listing, Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Event log.  Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A list of user endpoints. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "Crosslake-EndpointProtection-Evidence3.png"
+    ],
+    "comments": "Screenshots from BYOD Management are the same for here. Evidence 1, 2, \u0026 4 are same content."
+  },
+  {
+    "number": "42",
+    "text": "Which of the following apply to endpoint protection for servers?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "Endpoint protection for servers is not in place.",
+        "checked": false
+      },
+      {
+        "text": "Endpoint protection management is centralized (even if across multiple vendors).",
+        "checked": true
+      },
+      {
+        "text": "Software and signature updates occur automatically and at least every 24 hours.",
+        "checked": true
+      },
+      {
+        "text": "There are no exceptions to endpoint protection for servers OR exceptions to endpoint protection on servers are documented and approved by the individual designated to have ultimate security accountability and have risk-mitigating compensating controls in place.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Screenshots or export of the endpoint protection tooling console(s) and software or signature update configuration. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Enrolled end-user device and server listing, Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Event log.  Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A list servers. Please check when provided. Using Microsoft Update Server.png, Defender Device Inventory 20260608.csv",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AIntttearcvhaml.penngt:",
+      "DDeeffeennddeerr  NSoe tAtinlegrsts 2 L -a sUtp 3d0a tdeasy ws.hpennge",
+      "vDeerf eanvdaielar bSleet.ptinngg",
+      "s  D1 e-f Uenpddeart eSettings 3 -"
+    ],
+    "comments": "Now using Microsoft Defender for Endpoint / Cloud, with central management through Azure."
+  },
+  {
+    "number": "43",
+    "text": "Which of the following are in place for user device configuration and patch management?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "3.8",
+    "options": [
+      {
+        "text": "Configuration and patch management for end-user devices is not in place or is informally managed.",
+        "checked": false
+      },
+      {
+        "text": "Configuration management is centralized for end-user devices (even if across multiple vendors).",
+        "checked": true
+      },
+      {
+        "text": "A documented patch management policy exists and requires patching of critical and high severity patches for end-user devices within 30 days of release by the vendor.",
+        "checked": true
+      },
+      {
+        "text": "Exceptions to endpoint  configuration management are documented and approved by the individual designated to have ultimate security responsibility.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of Configuration management tooling console(s), Enrolled endpoint and server listing, Examples of polic(ies) applied to endpoints including patching policy, Event log, and Patch report",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Documented patch management policy. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Documented build checklist or policy. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A list of endpoint exceptions to the endpoint protection scope including rationale and approval, this includes endpoints and servers that are not patched to the latest versions. Please check when provided.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "IT Policy - Enduser IT.pdf",
+      "IT Helpdesk - Machine Configuration Standards.pdf"
+    ],
+    "comments": "Same evidence as BYOD Management for Evidence 1. No Endpoint exceptions exist"
+  },
+  {
+    "number": "44",
+    "text": "Which of the following are in place for server configuration and patch management?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "3.3",
+    "options": [
+      {
+        "text": "Configuration and patch management for servers is not in place or is informally managed.",
+        "checked": false
+      },
+      {
+        "text": "Configuration management is centralized for servers (even if across multiple vendors).",
+        "checked": true
+      },
+      {
+        "text": "A documented patch management policy exists and requires patching of critical and high severity patches for servers within 30 days of release by the vendor.",
+        "checked": true
+      },
+      {
+        "text": "Exceptions to server configuration management are documented and approved by the individual designated to have ultimate security responsibility.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of Configuration management tooling console(s), Enrolled server listing, Examples of polic(ies) applied to servers including patching policy, Event log, and Patch report",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Documented patch management policy. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A list of server exceptions to the endpoint protection scope including rationale and approval, this includes endpoints and servers that are not patched to the latest versions. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AIntstapcehcmtoer n-t 2: C02o6p0y 6o0f 8IT.p Pnoglicy - Infra IT.docx",
+      "AWS Security Hub - 20260608.png",
+      "AWS"
+    ],
+    "comments": "Patching is tracked via Amazon Inspector, and configuration is tracked by Security Hub, as well as using AWS supplied images as the base of all servers. No exceptions to policies."
+  },
+  {
+    "number": "45",
+    "text": "Which of the following are in place for network device hardening and patch management.",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "2.5",
+    "options": [
+      {
+        "text": "Processes to harden and patch network devices are not in place or are primarily informal.",
+        "checked": false
+      },
+      {
+        "text": "Only the SSH and HTTPS remote management protocols are used.",
+        "checked": false
+      },
+      {
+        "text": "Management and administrative interfaces are not exposed to the public Internet.",
+        "checked": true
+      },
+      {
+        "text": "Multi-factor authentication is required for administration.",
+        "checked": true
+      },
+      {
+        "text": "Default and root accounts are disabled or have strong, non-default passwords",
+        "checked": true
+      },
+      {
+        "text": "Network devices are patched in alignment with documented policy",
+        "checked": false
+      },
+      {
+        "text": "Exceptions to network hardening and patch management are documented and approved by the individual designated to have ultimate security responsibility.",
+        "checked": false
+      },
+      {
+        "text": "None of the above are in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Network device asset list. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Network device patch level report. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Documented build checklist or process. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Network device patch management policy. Please check when provided.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "Copy of Network_Interfaces_Audit - Q2 2026.xlsx"
+    ]
+  },
+  {
+    "number": "46",
+    "text": "Which of the following apply to the management of accounts with administrative privileges?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "Individuals with global administrator rights across systems are limited and appropriate.",
+        "checked": true
+      },
+      {
+        "text": "Administrator accounts are not shared.",
+        "checked": true
+      },
+      {
+        "text": "All administrator account activity is logged and monitored regularly.",
+        "checked": true
+      },
+      {
+        "text": "Individuals use different credentials to log in to accounts with global administration rights versus day-to-day accounts.",
+        "checked": true
+      },
+      {
+        "text": "Multi-factor authentication is enabled without exception.",
+        "checked": true
+      },
+      {
+        "text": "Administrators do not use service accounts for performing administrative actions.",
+        "checked": true
+      },
+      {
+        "text": "None of the above are in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A list of all back-office, corporate, and hosted systems with business-critical systems identified (e.g. Active Directory, Office365, Netsuite, SalesForce, Amazon AWS).",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of the list, titles, and employment status (FTE, contractor, MSP) of the Domain Administrators group for Active Directory, root accounts for cloud providers, and equivalent for back-office systems.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Global account activity log.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AAdttmacinhsm 2e0n2t:6 C0l6o0u9dT.prnagil",
+      "E Avcetnivtse  2D0ir2e6c0to6r0y9 D.ponmga",
+      "iCn lAouddmwinastc 2h0 A2D60 L6o0g9s. p2n0g260609.png",
+      "AWS"
+    ],
+    "comments": "Only AWS and Domain Administrators are Randy Holt, Cloud Administrator, and Terry Mitchum, CTO."
+  },
+  {
+    "number": "47",
+    "text": "Which of the following are in place to support network segregation?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "The network is not adequately segregated.",
+        "checked": false
+      },
+      {
+        "text": "Perimeter firewalls or security groups have “default denyˮ enabled and only allow explicitly approved traffic (public / private DMZ exists).",
+        "checked": true
+      },
+      {
+        "text": "Internal firewalls or security groups have “default denyˮ enabled and only allow explicitly approved traffic (public / private DMZ exists).",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of perimeter firewall(s) policies and configuration displaying ports and services open to the Internet. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A screenshot or export of internal firewall(s) policies and configuration. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "A20tt2a6c0hm61e0n.pt:n Pgr",
+      "o Pdr oBdlu SeQ LLo aSde cBuarlaitnyc Gerro 2u0p2 26002661006.p1n0g.p",
+      "nPgrod Web Server Security Group"
+    ],
+    "comments": "We have numerous security groups and load balancers. Attached screenshots of representative sample of Application API. Shows that only HTTPS traffic can come in from the outside, through the load balancer, to the target group and ultimately the web server."
+  },
+  {
+    "number": "48",
+    "text": "Which of the following are in place to support secure remote access?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "2.5",
+    "options": [
+      {
+        "text": "Remote access is not permitted.",
+        "checked": false
+      },
+      {
+        "text": "​IPSec-based VPN connections using key exchange are not used to support user remote access.",
+        "checked": false
+      },
+      {
+        "text": "SSL VPN access terminates after a period of 60 minutes of inactivity.",
+        "checked": false
+      },
+      {
+        "text": "Multi-factor authentication is required for all VPN or other remote access mechanisms.",
+        "checked": true
+      },
+      {
+        "text": "Email is not used to provide the multi-factor authentication token.",
+        "checked": true
+      },
+      {
+        "text": "Access is granted using role or group-based permissions.",
+        "checked": true
+      },
+      {
+        "text": "Audit logs of user connectivity is kept for at least 90 days.",
+        "checked": true
+      },
+      {
+        "text": "Block listing of embargoed countries and non-primary workforce locations via geo-restrictions is enabled.",
+        "checked": false
+      },
+      {
+        "text": "Exceptions to remote access requirements are documented and approved by the individual designated to have ultimate security responsibility,",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Remote access tooling configuration including a screenshot or export of userʼs allowed to access the environment remotely, multi-factor authentication enforcement, encryption algorithms, audit logging, geo-restriction configuration, and timeout.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Endpoint checks for systems (up to date patching, AV running, etc.). Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of the audit log including user connections. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "ACtiptahcehrm Seenttti:n VgsP N2 0A2c6ti0v6it1y0 L.pongg 2",
+      "0V2P6N0 U61s0e.rcss 1v",
+      "2 V0P26N0 S6e1c0u.printyg",
+      "G VrPouNp U 2s0e2rs6 026 21002.p6n0g6",
+      "1 V0P.pNng"
+    ],
+    "comments": "Using explicit whitelisting of IPs to be able to hit VPN enrollment page, instead of Georestricting. Chose to keep 24 hour VPN timeout, instead of 60 minute timeout, as it would impede users' workflow. There is not an endpoint security check for systems enforced by the VPN itself."
+  },
+  {
+    "number": "49",
+    "text": "Which of the following are in place to support monitoring, alerting and timely response to security events?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "1.0",
+    "options": [
+      {
+        "text": "Monitoring processes are not in place or are informal.,An outsourced managed services provider is responsible for monitoring alerts, events, and audit logs.",
+        "checked": false
+      },
+      {
+        "text": "A call tree is documented specifying the order in which key stakeholders in the organization are notified, when, and how.",
+        "checked": false
+      },
+      {
+        "text": "Runbooks and tooling include the ability for the security operations center or similar team to take immediate action to quarantine or isolate infections.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": true
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Call tree for alerting that requires attention. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of a reporting dashboard showing last 3 months of log activity. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Documented processes for response: SLAs, checklists, and runbooks. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Example tickets for response. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "ALattsatc 3h mMeonntt:h Cs.oppnyg",
+      "o Mf IiTc rPoosloicfyt  D- eSfeecnudreitry A Inlecritdse 2n0t 2R6e0s6p1o0n.spen.gd",
+      "o Ecxxa",
+      "mSIpElMe  ISTe Tciucrkietyt. Apnngalytics -"
+    ],
+    "comments": "Monitoring and response is not outsourced, it is handled by the Cloud Administrator and the CTO. We do not use a call tree. However, we do have alerting through various communications means, including Slack, email, and a dedicated alerting app, as well as contact information in the incident response documentation."
+  },
+  {
+    "number": "50",
+    "text": "Which of the following are in place to support remote tooling hardening?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "2.5",
+    "options": [
+      {
+        "text": "Individuals with administrative rights access to tooling is limited and appropriate.",
+        "checked": true
+      },
+      {
+        "text": "Administrator accounts are not shared.",
+        "checked": true
+      },
+      {
+        "text": "Administrative access requires multifactor authentication on every login.",
+        "checked": false
+      },
+      {
+        "text": "All administrative activity and support sessions are logged and stored for 1 year.",
+        "checked": false
+      },
+      {
+        "text": "Remote support sessions automatically log off or require reconnection after 30 minutes.",
+        "checked": true
+      },
+      {
+        "text": "Initiating remote support sessions requires one of: One-time passcode or pin; Certificate-based authentication; or Biometric verification.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A list of all remote support tools used internally or by third-parties (MSP) including but not limited to:  TeamViewer, Splashtop, GoToMyPC, AnyDesk, RemotePC, Zoho Assist, VNC Connect.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence:  Remote support tooling configuration including logging configuration.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A list of employees and contractors and access levels for each of the remote support tools.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "Crosslake-RemoteSupportTooling-Evidence2.png"
+    ],
+    "comments": "JumpCloud RemoteAssist - Sam Gunter (IT Manager), Aarron Anderson (Sr IT Support Specialist)"
+  },
+  {
+    "number": "51",
+    "text": "Which of the following are in place to support encryption at rest o end user devices?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "3.8",
+    "options": [
+      {
+        "text": "Encryption-at-rest is deployed on all hard disks on all end-user devices. fCentralized, industry recognized tooling is used to manage encryption (even if multiple vendors).",
+        "checked": true
+      },
+      {
+        "text": "Deprecated encryption and hashing algorithms, including the below, are not utilized for the encryption process.  - DES  - 3DES  - RC4  - MD5  - SHA1",
+        "checked": false
+      },
+      {
+        "text": "Recovery keys are only accessible by authorized personnel.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of:  - Encryption at rest tooling console(s)  - Enrolled end-user device listing.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: End-user device asset list including laptops, desktops, tablets, and mobile devices.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Recovery key access list.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "Crosslake-EncryptionAtRest-Evidence1.csv"
+    ],
+    "comments": "Evidence 1 is good for Evidence 2 - Sam Gunter \u0026 Aarron Anderson are only Admins capable of access recovery key list"
+  },
+  {
+    "number": "52",
+    "text": "Which of the following are in place to centrally manage public cloud account structure?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "Accounts are consolidated in the multi-account structure without exception.",
+        "checked": true
+      },
+      {
+        "text": "Accounts have a designated and documented owner and purpose.",
+        "checked": true
+      },
+      {
+        "text": "None of the above are in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Inventory of cloud accounts including owner, purpose, and whether they are centrally managed or not.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A screenshot or export of organizational hierarchy or structure from cloud console.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AWS Organization 20260610.png"
+    ],
+    "comments": "We only have two AWS Accounts currently, under a single organization. One for all workloads, and one solely to be the AWS \"delegated administrator\" account."
+  },
+  {
+    "number": "53",
+    "text": "Which of the following are in place to support network access control?",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "2.5",
+    "options": [
+      {
+        "text": "Unauthorized and unknown devices are, by default, not allowed on company networks.",
+        "checked": false
+      },
+      {
+        "text": "Certificates or user authentication are used to identify and authenticate known devices.",
+        "checked": true
+      },
+      {
+        "text": "Real-time visibility of the assets on networks is available.",
+        "checked": true
+      },
+      {
+        "text": "Stakeholders are notified immediately when an unauthorized device attempts to connect to company networks (excluding guest networks).",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of network access control tooling configuration including policy enforcement or checks performed prior to allowing an asset on the network.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of asset tracking of the network(s) in real-time.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AWS Network Interfaces 20260610.png"
+    ],
+    "comments": "Network interfaces in AWS are audited quarterly, and are visible to us at any time."
+  },
+  {
+    "number": "54",
+    "text": "Please indicate which of the following are in place to secure LLM training data.",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "1.0",
+    "options": [
+      {
+        "text": "Security training is not in place or is performed informally.",
+        "checked": false
+      },
+      {
+        "text": "All sources of training data are licensed for use and fit for purpose.",
+        "checked": false
+      },
+      {
+        "text": "The access control list aligns to the least privilege principle based on roles or groups.",
+        "checked": false
+      },
+      {
+        "text": "Training data is encrypted at rest at the repository, disk, or data level using AES256 or another modern algorithm.",
+        "checked": false
+      },
+      {
+        "text": "Encryption keys are managed by authorized personnel only.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": true
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: An inventory of training data including the source of the data, license for use, and where it is stored. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Access control lists for training data repositories including name and role. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Access control lists for training data repositories including name and role. Please check when provided.",
+        "checked": false
+      }
+    ],
+    "attachments": null,
+    "comments": "We do not use any data to train our own models."
+  },
+  {
+    "number": "55",
+    "text": "Please indicate which of the following are in place to secure the LLM environment.",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "3.3",
+    "options": [
+      {
+        "text": "Security training is not in place or is performed informally.",
+        "checked": false
+      },
+      {
+        "text": "Authentication is centralized across accounts.",
+        "checked": true
+      },
+      {
+        "text": "Strong password policy is in place that requires twelve characters.",
+        "checked": false
+      },
+      {
+        "text": "Multifactor authentication is enforced and re-authentication is enabled.",
+        "checked": true
+      },
+      {
+        "text": "Group or role structures are in place to grant permissions.",
+        "checked": true
+      },
+      {
+        "text": "Administrative accounts, groups, or roles are separate from day-to-day use.",
+        "checked": true
+      },
+      {
+        "text": "Least privilege and role-based access principles are enforced via policies.",
+        "checked": true
+      },
+      {
+        "text": "Filtering devices (e.g. firewall, software firewall, WAF, etc.) exist between network housing model file and development, staging, and other environments.",
+        "checked": true
+      },
+      {
+        "text": "Access to the environment is “default denyˮ.",
+        "checked": false
+      },
+      {
+        "text": "Model files are immutable (read-only) and not directly accessible.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": true
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of authentication and authorization requirements for model or model environment are accessed for inference, training, or management. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A screenshot or export of firewall(s) or system policies and configuration displaying how models or the model environment are accessed for inference, training, or management. Please check when provided. 10.13.37 AM.png",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "A10tt.1a0c.h3m3 eAnMt:. pSncgre",
+      "eSncsrheoetn 2sh0o2t6 2-00626-2-50 6a-t2 150 .a0t9 1.02.910 A.M21. pAnMg.",
+      "p Sncgr",
+      "e Secnrseheonts 2h0o2t 62-00266--2056 -a2t5 at"
+    ],
+    "comments": "tNhoe  oepnevnir ownemigehntt models are used in"
+  },
+  {
+    "number": "56",
+    "text": "Please indicate which of the following are in place to ensure base model integrity.",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "Base models are not managed or are informally managed.",
+        "checked": false
+      },
+      {
+        "text": "All base model signature and sources are verified prior to use.",
+        "checked": true
+      },
+      {
+        "text": "Validity and bias testing of the base model is performed prior to deployment.",
+        "checked": true
+      },
+      {
+        "text": "Security testing of the base model is performed prior to deployment.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Records of security and validity testing. ind-",
+        "checked": false
+      }
+    ],
+    "attachments": null,
+    "comments": "Progress Learning uses first-party Gemini models (Google manages integrity); we do not use open- weight/third-party models. Googleʼs paper is provided below if we need to check this as well and leave an additional comment in regards to the previous bullet. https://storage.googleapis.com/deepm media/gemini/gemini_v2_5_report.pdf"
+  },
+  {
+    "number": "57",
+    "text": "AI/LLM Visibility",
+    "category": "TECHNICAL AND TOOLING",
+    "score": "4.3",
+    "options": [
+      {
+        "text": "A documented inventory of approved generative AI tools and associated business use cases is maintained and reviewed at least annually.",
+        "checked": true
+      },
+      {
+        "text": "Technical controls are implemented to detect or restrict unauthorized (“shadowˮ) use of generative AI tools.",
+        "checked": true
+      },
+      {
+        "text": "GenAI use cases are risk-classified based on data sensitivity and business impact",
+        "checked": true
+      },
+      {
+        "text": "An approval and risk review process exists for onboarding new generative AI tools or use cases.",
+        "checked": true
+      },
+      {
+        "text": "Logging and monitoring mechanisms provide visibility into enterprise- approved GenAI usage",
+        "checked": true
+      },
+      {
+        "text": "Sensitive data monitoring controls (e.g., DLP, CASB, proxy controls) are configured to address external AI platforms.",
+        "checked": true
+      },
+      {
+        "text": "None of these are in place (please comment)",
+        "checked": false
+      }
+    ],
+    "evidence": null,
+    "attachments": null
+  },
+  {
+    "number": "58",
+    "text": "Please indicate which of the following procedures and protection mechanisms are in place to protect high risk transactions.",
+    "category": "SECURE PROCESS",
+    "score": "3.8",
+    "options": [
+      {
+        "text": "A procedure for high-risk transactions is in place and requires known- voice verification or the equivalent for inbound and outbound money exchange processes including: Payroll, bank account changes, changes to payable account bank information, and changes to receivable account bank information",
+        "checked": true
+      },
+      {
+        "text": "Multi-factor authentication is required for login to all bank accounts across the enterprise.",
+        "checked": true
+      },
+      {
+        "text": "Ad-hoc wire transfers need multi-stage and multi-party approval.",
+        "checked": true
+      },
+      {
+        "text": "Invoices state the company will never ask you to change remittance information via email.",
+        "checked": false
+      },
+      {
+        "text": "None of the above are in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Procedure documenting the requirements for high- risk transactions including, payroll, bank account changes, changes to payable account bank information, and changes to receivable account bank information. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of multi-factor authentication configuration for bank account(s) (redact out non-applicable information). Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A copy of example invoices. Please check when provided.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "Accounting MFA.png"
+    ]
+  },
+  {
+    "number": "59",
+    "text": "Which of the following are in place for high risk transaction policy accountability, and training?",
+    "category": "SECURE PROCESS",
+    "score": "1.0",
+    "options": [
+      {
+        "text": "A policy is in place for high risk transactions that contains the statement \"No changes to financial systems shall occur through email exchanges, or without known-voice verification. These systems include but may not be limited to payroll, vendor payables, and bank accounts.ˮ",
+        "checked": false
+      },
+      {
+        "text": "The policy has been updated within the past year.",
+        "checked": false
+      },
+      {
+        "text": "The policy states that all employees and contractors with access to financial systems are required to sign off on the policy at onboarding and prior to being granted access to any financial system.",
+        "checked": false
+      },
+      {
+        "text": "Is signed off on by the Chief Financial Officer of the company.",
+        "checked": false
+      },
+      {
+        "text": "All employees and contractors with access to or ability to change financial systems have digitally or physically signed off on their responsibility relative to the policy during onboarding and at least annually thereafter.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment below.",
+        "checked": true
+      },
+      {
+        "text": "A screenshot or export of a training tool or copies of paperwork showing that members of the above list have signed off on the company policy.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Documentation showing the policy around high risk transaction systems including payroll and bank account changes.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A listing of employees and contractors with access to or ability to request changes to financial systems (e.g. - payroll systems, vendor payables, and bank accounts).",
+        "checked": false
+      }
+    ],
+    "attachments": null,
+    "comments": "No written policy."
+  },
+  {
+    "number": "60",
+    "text": "Please indicate which of the following are in place to support preparedness to respond to a security incident, have a documented plan, and test that plan at least annually.",
+    "category": "SECURE PROCESS",
+    "score": "1.9",
+    "options": [
+      {
+        "text": "We do not have an incident response plan or supporting procedures.",
+        "checked": false
+      },
+      {
+        "text": "Documented incident management and response plan and procedure(s) exist.",
+        "checked": true
+      },
+      {
+        "text": "Which of the following are documented in the plan and procedures? (Select all that apply)",
+        "checked": true
+      },
+      {
+        "text": "- roles and responsibilities",
+        "checked": true
+      },
+      {
+        "text": "- external communication strategy",
+        "checked": true
+      },
+      {
+        "text": "- internal communication strategy including notification procedures to the PE firm at the time of incident",
+        "checked": false
+      },
+      {
+        "text": "- communication templates",
+        "checked": false
+      },
+      {
+        "text": "The test has been facilitated and documented by a third-party.",
+        "checked": false
+      },
+      {
+        "text": "The incident response plan has been tested within the past 12 months.",
+        "checked": false
+      },
+      {
+        "text": "The test includes ransomware and business email compromise scenarios.",
+        "checked": false
+      },
+      {
+        "text": "The test Involved all stakeholders – Exec leadership, Security, IT, HR, Counsel, client-facing roles, PE firm leadership",
+        "checked": false
+      },
+      {
+        "text": "The test includes documented lessons learned and improvements to be made with action owners.",
+        "checked": false
+      },
+      {
+        "text": "AI-related incident scenarios are tested through tabletop or simulation exercises",
+        "checked": false
+      },
+      {
+        "text": "The incident response plan explicitly includes AI-related incident scenarios",
+        "checked": false
+      },
+      {
+        "text": "AI-related incident scenarios are tested through tabletop or simulation exercises",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Provide a copy of your incident response plan. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: Provide a third-party or internal report or written overview describing the last test of the plan (tabletop being sufficient).",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "Copy of IT Policy - Security Incident Response.docx"
+    ],
+    "comments": "The plan is more of a guideline, without specific steps to test on an annual basis."
+  },
+  {
+    "number": "61",
+    "text": "Please indicate which of the following are in place so support preparedness to respond to a security incident or disaster, recover critical systems and data, have a backup management program in place with documented recovery procedure(s), and test that plan at least annually.",
+    "category": "SECURE PROCESS",
+    "score": "N/A",
+    "options": [
+      {
+        "text": "We do not maintain any systems, all systems are cloud-based or outsourced.",
+        "checked": true
+      },
+      {
+        "text": "We do not have processes in place to adequately respond to security events or disasters and recover systems.",
+        "checked": false
+      },
+      {
+        "text": "Technical recovery procedures or runbooks exist for critical systems.",
+        "checked": false
+      },
+      {
+        "text": "Technical recovery procedures or runbooks are adequately up-to-date.",
+        "checked": false
+      },
+      {
+        "text": "An offline copy of the runbooks has been saved in a secure location.",
+        "checked": false
+      },
+      {
+        "text": "Which of the following are documented in the procedures / runbooks? (Select all that apply)",
+        "checked": false
+      },
+      {
+        "text": "- a listing of key stakeholders including IT, networking, security, and critical third-party or vendor contacts",
+        "checked": false
+      },
+      {
+        "text": "- the locations of data backups if applicable",
+        "checked": false
+      },
+      {
+        "text": "- the locations of server / infrastructure backups",
+        "checked": false
+      },
+      {
+        "text": "- prescriptive instructions on how to rebuild network and server environment including system dependencies, recovery ordering, validation steps, and system requirements.",
+        "checked": false
+      },
+      {
+        "text": "An offline copy of the runbooks has been saved in a secure location (e.g. with Private Equity)",
+        "checked": false
+      },
+      {
+        "text": "None of the above are in place or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A copy of technical recovery runbooks for critical systems and applications.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "Copy of IT Policy - Disaster Recovery.docx"
+    ],
+    "comments": "We have general guidelines on what systems would need recovered in the event of specific incidents or disasters, but they are not runbooks with exact commands. Cloud Administrator has requisite knowledge to carry out the needed tasks."
+  },
+  {
+    "number": "62",
+    "text": "Please indicate which of the following are in place to support associate onboarding and offboarding processes.",
+    "category": "SECURE PROCESS",
+    "score": "3.3",
+    "options": [
+      {
+        "text": "Onboarding and offboarding procedures are not in place or are informal.",
+        "checked": false
+      },
+      {
+        "text": "Documented onboarding and offboarding procedures exist.",
+        "checked": true
+      },
+      {
+        "text": "Separation of duties is in place between those requesting the onboarding or offboarding and those approving access to systems.",
+        "checked": true
+      },
+      {
+        "text": "A checklist of critical systems access is validated during onboarding and offboarding.",
+        "checked": false
+      },
+      {
+        "text": "Procedures are in place to obtain a return of assets during offboarding.",
+        "checked": true
+      },
+      {
+        "text": "Offboarding of access to systems occurs within 24 hours of request and within 4 hours for IT administrative users.",
+        "checked": false
+      },
+      {
+        "text": "Personal devices are wiped of company data as part of the process or checklist for offboarding.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Provide a copy of your onboarding and offboarding process. Please check when provided.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: A screenshot or export example of onboarding and offboarding requests (tickets) for new and terminated employees, contractors, or vendors. Please check when provided.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "AHtirteac1.hpmnge",
+      "n Ht:i rOen2b.ponagrding Policy.pdf",
+      "Offboarding Policy (1).pdf",
+      "Term2.png",
+      "Term1.png"
+    ]
+  },
+  {
+    "number": "63",
+    "text": "Secure agentic engineering review",
+    "category": "SECURE PROCESS",
+    "score": "1.4",
+    "options": [
+      {
+        "text": "Human review is mandatory for AI-generated code prior to merge or deployment",
+        "checked": true
+      },
+      {
+        "text": "AI-generated code is subject to secure coding standards and automated security testing prior to release",
+        "checked": false
+      },
+      {
+        "text": "AI-generated changes cannot bypass standard peer review and change management processes",
+        "checked": true
+      },
+      {
+        "text": "Developers are required to disclose or tag AI-assisted code contributions",
+        "checked": false
+      },
+      {
+        "text": "Reviewers are trained to identify AI-specific risks (e.g., hallucinated logic, insecure defaults, licensing concerns)",
+        "checked": false
+      },
+      {
+        "text": "Licensing and intellectual property risks of AI-generated code are evaluated prior to release",
+        "checked": false
+      },
+      {
+        "text": "None of these are in place (please comment)",
+        "checked": false
+      }
+    ],
+    "evidence": null,
+    "attachments": null
+  },
+  {
+    "number": "64",
+    "text": "Which of the following are in place to ensure automated or manual security testing of code occurs prior to release of changes. Issues identified by security testing are resolved in a timely manner?",
+    "category": "RECURRING HYGIENE",
+    "score": "3.3",
+    "options": [
+      {
+        "text": "All code and dependencies for client-facing software is manually QA tested or scanned via automation for security issues.",
+        "checked": false
+      },
+      {
+        "text": "Documented software development process or policy exists and requires resolution of critical and high severity security issues within 30 days of identification.",
+        "checked": true
+      },
+      {
+        "text": "Critical or high severity vulnerabilities have been reviewed, triaged, and have been resolved or will be resolved within the next 30 days.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of tooling utilized for security testing such as SAST, DAST, dependency scanning, or automated QA.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of quality assurance tests that are specific to security.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Documented software development lifecycle process or policy.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "IT Policy - Development.docx.pdf"
+    ]
+  },
+  {
+    "number": "65",
+    "text": "Please indicate which of the following are in place to support security and AI training.",
+    "category": "RECURRING HYGIENE",
+    "score": "4.4",
+    "options": [
+      {
+        "text": "Security training is not in place or is performed informally.",
+        "checked": false
+      },
+      {
+        "text": "AI training is not in place or is performed informally.",
+        "checked": false
+      },
+      {
+        "text": "The training policy requires training during onboarding and at least annually thereafter.",
+        "checked": true
+      },
+      {
+        "text": "A record of attendance is generated for those participating in the training.",
+        "checked": true
+      },
+      {
+        "text": "Required training includes security best practices.",
+        "checked": true
+      },
+      {
+        "text": "Required training includes phishing, smishing, and vishing.",
+        "checked": true
+      },
+      {
+        "text": "Required training includes social engineering.",
+        "checked": true
+      },
+      {
+        "text": "Required training includes business email compromise.",
+        "checked": true
+      },
+      {
+        "text": "Required training includes generative AI overview.",
+        "checked": true
+      },
+      {
+        "text": "Required training includes the responsible use of GenAI.",
+        "checked": false
+      },
+      {
+        "text": "Required training includes risks of GenAI.",
+        "checked": false
+      },
+      {
+        "text": "Required training includes company-specific GenAI policy.",
+        "checked": true
+      },
+      {
+        "text": "All employees and relevant contractors are required to, and have signed off on the companyʼs Generative AI policy.",
+        "checked": true
+      },
+      {
+        "text": "All employees and relevant contractors are required to, and have signed off on the companyʼs Security or Acceptable Use policy.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: A screenshot or export of centralized training or learning management system if applicable. Please check when provided.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of title and table of contents of required training module(s) or content.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of policy or recurrence of training.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of most recent sign-off of employees on the AI policy.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of most recent sign-off of employees on the security policy.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: If applicable, screenshot of previously completed training campaigns.",
+        "checked": false
+      }
+    ],
+    "attachments": null,
+    "comments": "We are in the process of rolling out a company wide implementation of AI access and policies. This will be completed in August 2026."
+  },
+  {
+    "number": "66",
+    "text": "Which of the following are in place for third-party network penetration testing?",
+    "category": "RECURRING HYGIENE",
+    "score": "3.8",
+    "options": [
+      {
+        "text": "Penetration is performed by a qualified third-party against all public- facing infrastructure and includes manual testing and verification of issues.",
+        "checked": true
+      },
+      {
+        "text": "The scope of the testing is non-credentialed external network testing and includes:  - All domains of the company and its acquisitions   - DNS enumeration (reconnaissance) of domains in scope  - IP addresses or hostnames of all sites not tied to DNS including offices, manufacturing locations, data centers, and cloud infrastructure.",
+        "checked": true
+      },
+      {
+        "text": "The penetration testing report is within the last 12 months.",
+        "checked": true
+      },
+      {
+        "text": "Critical and high severity vulnerabilities identified in the report have been remediated and third-party re-test has taken place to confirm fixes.",
+        "checked": false
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: An export of the domains, IP addresses, and hostnames being scanned on a recurring basis.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: Inventory of acquisitions made over the past 5 years.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: The organizationʼs most recent third-party external network penetration report if available.",
+        "checked": true
+      }
+    ],
+    "attachments": [
+      "Copy of 2025 External Pen Test Final.pdf"
+    ]
+  },
+  {
+    "number": "67",
+    "text": "Which of the following are in place for third-party application penetration testing?",
+    "category": "RECURRING HYGIENE",
+    "score": "5.0",
+    "options": [
+      {
+        "text": "An application vulnerablity managment policy is in place.",
+        "checked": true
+      },
+      {
+        "text": "The application vulnerability management policy requires a credentialed third-party penetration testing of developed and hosted SaaS software at least annually.",
+        "checked": true
+      },
+      {
+        "text": "Critical or high severity findings in the tests have been reviewed, triaged, and have been resolved or will be resolved within 60 days of indentification.",
+        "checked": true
+      },
+      {
+        "text": "None of the above or other, please comment.",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Please provide a copy of your vulnerability management policy and process.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: If applicable, provide historical copies of detailed non-credentialed application penetration testing reports including scope and findings.",
+        "checked": true
+      },
+      {
+        "text": "Required evidence: If applicable, provide historical copies of detailed credentialed application penetration testing reports including scope and findings.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence:* If applicable, provide copies of remediation plans and progress against the findings reported in penetration tests.",
+        "checked": false
+      }
+    ],
+    "attachments": [
+      "Copy of 2025 External Pen Test Final.pdf"
+    ]
+  },
+  {
+    "number": "68",
+    "text": "Please indicate which of the following apply to the contracting and onboarding of vendors that have access to company systems or data.",
+    "category": "RECURRING HYGIENE",
+    "score": "1.0",
+    "options": [
+      {
+        "text": "We do not engage vendors that have access to company systems or data",
+        "checked": false
+      },
+      {
+        "text": "Vendor onboarding processes are informal or undocumented.",
+        "checked": true
+      },
+      {
+        "text": "A documented process for onboarding new vendors or renewing existing vendors is in place.",
+        "checked": false
+      },
+      {
+        "text": "Vendor access provisioning is performed in alignment with a documented process.",
+        "checked": false
+      },
+      {
+        "text": "Which of the following acceptable contractual security criteria are documented? (Check all that apply)",
+        "checked": false
+      },
+      {
+        "text": "– incident notification period,",
+        "checked": false
+      },
+      {
+        "text": "– audit rights of the company",
+        "checked": false
+      },
+      {
+        "text": "– service level agreements,",
+        "checked": false
+      },
+      {
+        "text": "– subcontractor security",
+        "checked": false
+      },
+      {
+        "text": "– data retention and destruction,",
+        "checked": false
+      },
+      {
+        "text": "– confidentiality",
+        "checked": false
+      },
+      {
+        "text": "– data breach liability",
+        "checked": false
+      }
+    ],
+    "evidence": [
+      {
+        "text": "Required evidence: Documentation of the process for onboarding new vendors or renewing existing vendors.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A list of active IT vendors, service providers, or contractors with access to company systems or data.",
+        "checked": false
+      },
+      {
+        "text": "Required evidence: A screenshot or export of tickets for onboarding the above vendors, service providers, and contractors.",
+        "checked": false
+      }
+    ],
+    "attachments": null
+  },
+  {
+    "number": "69",
+    "text": "Please provide several one-hour times starting after one week that you are available to meet to discuss questions the Crosslake practitioner may have about the assessment results.",
+    "category": "VALIDATION CALL",
+    "score": "Not Scored",
+    "options": null,
+    "evidence": null,
+    "attachments": null,
+    "comments": "July 7th - Noon to 1PM Central July 9th - 10AM to 11AM Central July 9th - Noon to 1PM Central July 10th - Noon to 1PM Central"
+  }
+]

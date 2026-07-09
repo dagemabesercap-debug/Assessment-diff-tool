@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio Cybersecurity Assessment Hub: Monitor posture trends and compare year-over-year security changes.">
+  <title>Cybersecurity Assessment Dashboard Hub</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Load Chart.js for premium trend visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="glass-panel" style="padding: 24px 32px; border-radius: 16px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="logo-section">
+        <h1>Cybersecurity Assessment Hub</h1>
+        <p>Monitor security posture and verify year-over-year differences across portfolios</p>
+      </div>
+      <div>
+        <button class="filter-btn active" id="btn-open-upload" style="background: var(--primary-gradient); border: none; color: #fff; padding: 10px 24px; font-weight: 700;">
+          + Add Portfolio Company
+        </button>
+      </div>
+    </header>
+
+    <div class="hero-grid" style="grid-template-columns: 350px 1fr; gap: 32px; align-items: start;">
+      
+      <!-- Left Column: Portco List -->
+      <aside class="glass-panel" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; min-height: 500px;">
+        <h2 style="font-size: 16px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+          Portfolio Companies
+        </h2>
+        <div id="portco-list" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 400px;">
+          <!-- Dynamically populated list of companies -->
+        </div>
+      </aside>
+
+      <!-- Right Column: Portco Posture Trend & Comparison Trigger -->
+      <main class="glass-panel" id="portco-detail-panel" style="padding: 32px; min-height: 500px; display: flex; flex-direction: column; justify-content: space-between;">
+        
+        <!-- Welcome state when no company is selected -->
+        <div id="welcome-state" style="text-align: center; margin: auto 0; padding: 40px 0;">
+          <div style="font-size: 48px; margin-bottom: 16px;">🛡️</div>
+          <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Select a Portfolio Company</h2>
+          <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto; font-size: 14px;">
+            Choose a portfolio company from the sidebar to review overall scores over time or run a comparative analysis between years.
+          </p>
+        </div>
+
+        <!-- Detail state when a company is active -->
+        <div id="detail-state" style="display: none; flex-direction: column; gap: 32px; height: 100%;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
+            <div>
+              <h2 id="active-portco-name" style="font-size: 24px; font-weight: 800; background: linear-gradient(to right, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Studio Designer
+              </h2>
+              <p id="active-portco-years-desc" style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                Assessment history: 2025, 2026
+              </p>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <!-- Quick Trend summary -->
+              <div id="active-portco-summary-badge" class="delta-badge negative" style="padding: 8px 16px;">
+                -20pt change (2025 -> 2026)
+              </div>
+              <button type="button" class="filter-btn" id="btn-delete-portco" style="border-color: rgba(239, 68, 68, 0.35); color: var(--danger); padding: 8px 14px; font-weight: 700;">
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Trend Chart Container -->
+          <div class="glass-panel" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); padding: 24px; border-radius: 12px; position: relative; height: 280px;">
+            <canvas id="trendChart"></canvas>
+          </div>
+
+          <!-- Comparison Selection Area -->
+          <div class="glass-panel" style="padding: 24px; display: flex; justify-content: space-between; align-items: center; background: rgba(124, 58, 237, 0.03); border-color: rgba(124, 58, 237, 0.15);">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <h3 style="font-size: 15px; font-weight: 700;">Compare Two Assessments</h3>
+              <p style="color: var(--text-secondary); font-size: 12px;">Choose two assessment years to run a detailed posture diff analysis.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <select class="search-input" id="select-year-a" style="width: 100px; padding: 8px 12px; background: rgba(0,0,0,0.3);"></select>
+                <span style="color: var(--text-muted); font-weight: 700;">vs</span>
+                <select class="search-input" id="select-year-b" style="width: 100px; padding: 8px 12px; background: rgba(0,0,0,0.3);"></select>
+              </div>
+              <button class="filter-btn active" id="btn-compare" style="background: var(--primary-gradient); border: none; color: #fff; padding: 10px 24px; font-weight: 700;">
+                Compare Diff
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Upload Modal Overlay -->
+    <div id="upload-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 100;">
+      <div class="glass-panel" style="width: 500px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
+          <h2 style="font-size: 18px; font-weight: 800;">Add Portfolio Assessment</h2>
+          <button id="btn-close-upload" style="background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="upload-form" style="display: flex; flex-direction: column; gap: 18px;">
+          <!-- Company Name Input -->
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Company Name</label>
+            <input type="text" class="search-input" id="input-company-name" placeholder="e.g. Studio Designer" required style="padding: 10px 16px;">
+          </div>
+
+          <!-- Multiple Report uploads -->
+          <div style="display: flex; flex-direction: column; gap: 12px;" id="upload-rows-container">
+            <label style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Upload Assessment Reports</label>
+            
+            <div style="display: flex; gap: 8px; align-items: center;" class="upload-row">
+              <input type="file" class="search-input" style="flex: 1; padding: 6px 12px;" accept=".pdf" required>
+              <select class="search-input" style="width: 100px; padding: 8px 12px; background: rgba(0,0,0,0.3);" required>
+                <option value="" disabled selected>Year</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Add Another File Row button -->
+          <button type="button" id="btn-add-row" style="background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--panel-border); color: var(--text-secondary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; text-align: center;">
+            + Add Another Year's Report
+          </button>
+
+          <!-- Submit Action -->
+          <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 12px;">
+            <button type="button" class="filter-btn" id="btn-cancel-upload">Cancel</button>
+            <button type="submit" class="filter-btn active" style="background: var(--primary-gradient); border: none; color: #fff; padding: 10px 24px;">Upload & Parse</button>
+          </div>
+        </form>
+
+        <!-- Progress Spinner overlay inside modal -->
+        <div id="modal-spinner" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8, 9, 12, 0.9); border-radius: 16px;">
+          <div style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <h3 style="font-size: 15px; font-weight: 700;" id="spinner-status">Parsing assessment PDFs...</h3>
+          <p style="color: var(--text-secondary); font-size: 12px;">Extracting questions, options, comments & scoring data.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <style>
+    /* Inline styles specifically for Homepage interaction */
+    .portco-item {
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .portco-item:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--panel-border-hover);
+    }
+    .portco-item.active {
+      background: rgba(124, 58, 237, 0.08);
+      border-color: var(--primary);
+    }
+    .portco-item h3 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .portco-item p {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <script src="app.js?v=20260707-delete-sync"></script>
+</body>
+</html>
