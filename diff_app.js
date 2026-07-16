@@ -287,9 +287,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const numMatch = q.q2026_number && q.q2026_number.includes(query) || q.q2025_number && q.q2025_number.includes(query);
         const textMatch = q.text_2026 && q.text_2026.toLowerCase().includes(query) || q.text_2025 && q.text_2025.toLowerCase().includes(query);
         const commentMatch = q.comments_2026 && q.comments_2026.toLowerCase().includes(query) || q.comments_2025 && q.comments_2025.toLowerCase().includes(query);
+        const responseMatch = q.free_response_2026 && q.free_response_2026.toLowerCase().includes(query) || q.free_response_2025 && q.free_response_2025.toLowerCase().includes(query);
         const optionMatch = q.options_diff && q.options_diff.some(o => o.text.toLowerCase().includes(query));
         
-        if (!numMatch && !textMatch && !commentMatch && !optionMatch) {
+        if (!numMatch && !textMatch && !commentMatch && !responseMatch && !optionMatch) {
           return false;
         }
       }
@@ -301,7 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasScoreChanged = q.score_delta && q.score_delta !== 0;
         const hasOptionsChanged = q.options_diff && q.options_diff.some(o => o.status !== 'unchanged');
         const hasCommentsChanged = q.comments_2025 !== q.comments_2026;
-        return q.isNew || q.isDeleted || hasScoreChanged || hasOptionsChanged || hasCommentsChanged;
+        const hasResponseChanged = q.free_response_2025 !== q.free_response_2026;
+        return q.isNew || q.isDeleted || hasScoreChanged || hasOptionsChanged || hasCommentsChanged || hasResponseChanged;
       }
       if (currentFilter === 'regressions') {
         const hasScoreDrop = q.score_delta && q.score_delta < 0;
@@ -409,15 +411,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="meta-grid">
               
               <div class="meta-block-card">
-                <div class="meta-block-title">${yearA} Comments & Attachments</div>
-                <div class="meta-block-content ${!q.comments_2025 ? 'empty' : ''}">${q.comments_2025 || 'No respondent comments provided.'}</div>
-                ${renderAttachments(q.attachments_2025)}
+                <div class="meta-block-title">${yearA} Responses, Comments & Attachments</div>
+                <div class="meta-block-content ${!q.free_response_2025 ? 'empty' : ''}"><strong>Written response:</strong><br>${q.free_response_2025 || 'No free-form response provided.'}</div>
+                <div class="meta-block-content ${!q.comments_2025 ? 'empty' : ''}"><strong>Comments:</strong><br>${q.comments_2025 || 'No respondent comments provided.'}</div>
+                ${renderAttachments(q.attachments_2025, yearA, q.q2025_number)}
               </div>
 
               <div class="meta-block-card">
-                <div class="meta-block-title">${yearB} Comments & Attachments</div>
-                <div class="meta-block-content ${!q.comments_2026 ? 'empty' : ''}">${q.comments_2026 || 'No respondent comments provided.'}</div>
-                ${renderAttachments(q.attachments_2026)}
+                <div class="meta-block-title">${yearB} Responses, Comments & Attachments</div>
+                <div class="meta-block-content ${!q.free_response_2026 ? 'empty' : ''}"><strong>Written response:</strong><br>${q.free_response_2026 || 'No free-form response provided.'}</div>
+                <div class="meta-block-content ${!q.comments_2026 ? 'empty' : ''}"><strong>Comments:</strong><br>${q.comments_2026 || 'No respondent comments provided.'}</div>
+                ${renderAttachments(q.attachments_2026, yearB, q.q2026_number)}
               </div>
 
             </div>
@@ -479,13 +483,13 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  function renderAttachments(attachments) {
+  function renderAttachments(attachments, year, questionNumber) {
     if (!attachments || attachments.length === 0) return '';
     return `
       <div class="attachment-list">
         ${attachments.map(att => `
-          <a href="#" class="attachment-chip" title="Download Evidence file" onclick="event.preventDefault(); alert('Downloading evidence file: ${att}');">
-            📎 ${att}
+          <a href="/api/attachments?portco=${encodeURIComponent(activePortco)}&year=${encodeURIComponent(year)}&question=${encodeURIComponent(questionNumber)}&file=${encodeURIComponent(att)}" class="attachment-chip" title="Download evidence file">
+            📎 ${escapeHTML(att)}
           </a>
         `).join('')}
       </div>

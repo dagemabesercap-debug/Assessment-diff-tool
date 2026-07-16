@@ -1,30 +1,5 @@
 [
   {
-    "name": "Studio Designer",
-    "years": [
-      "2025",
-      "2026"
-    ],
-    "scores": {
-      "2025": 83,
-      "2026": 63
-    },
-    "categoryScores": {
-      "2025": {
-        "ORGANIZATION AND PLANNING": 64,
-        "RECURRING HYGIENE": 55,
-        "SECURE PROCESS": 76,
-        "TECHNICAL AND TOOLING": 100
-      },
-      "2026": {
-        "ORGANIZATION AND PLANNING": 72,
-        "RECURRING HYGIENE": 39,
-        "SECURE PROCESS": 73,
-        "TECHNICAL AND TOOLING": 64
-      }
-    }
-  },
-  {
     "name": "SD2",
     "years": [
       "2025",
@@ -71,21 +46,21 @@
     }
   },
   {
-    "name": "Progress Learning",
+    "name": "Studio Designer",
     "years": [
       "2025",
       "2026"
     ],
     "scores": {
-      "2025": 68,
+      "2025": 83,
       "2026": 64
     },
     "categoryScores": {
       "2025": {
-        "ORGANIZATION AND PLANNING": 74,
-        "RECURRING HYGIENE": 90,
-        "SECURE PROCESS": 53,
-        "TECHNICAL AND TOOLING": 66
+        "ORGANIZATION AND PLANNING": 64,
+        "RECURRING HYGIENE": 55,
+        "SECURE PROCESS": 76,
+        "TECHNICAL AND TOOLING": 100
       },
       "2026": {
         "ORGANIZATION AND PLANNING": 74,

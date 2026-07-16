@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectYearA = document.getElementById('select-year-a');
   const selectYearB = document.getElementById('select-year-b');
   const btnCompare = document.getElementById('btn-compare');
+  const btnDownloadReport = document.getElementById('btn-download-report');
 
   // Modal DOM Elements
   const btnOpenUpload = document.getElementById('btn-open-upload');
@@ -244,6 +245,23 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = `diff.html?portco=${encodeURIComponent(activePortco.name)}&yearA=${yrA}&yearB=${yrB}`;
   });
 
+  btnDownloadReport.addEventListener('click', () => {
+    if (!activePortco || !activePortco.years || activePortco.years.length === 0) return;
+    const latestYear = activePortco.years[activePortco.years.length - 1];
+    const query = `portco=${encodeURIComponent(activePortco.name)}&year=${encodeURIComponent(latestYear)}`;
+    triggerDownload(`/api/reports?${query}`);
+    setTimeout(() => triggerDownload(`/api/evidence?${query}`), 250);
+  });
+
+  function triggerDownload(url) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   document.addEventListener('click', (event) => {
     const deleteButton = event.target.closest('#btn-delete-portco');
     if (!deleteButton) return;
@@ -313,14 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
     row.style.marginTop = '8px';
     
     row.innerHTML = `
-      <input type="file" class="search-input" style="flex: 1; padding: 6px 12px;" accept=".pdf" required>
-      <select class="search-input" style="width: 100px; padding: 8px 12px; background: rgba(0,0,0,0.3);" required>
-        <option value="" disabled selected>Year</option>
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-        <option value="2027">2027</option>
-      </select>
+      <input type="text" class="search-input assessment-code" style="flex: 1; padding: 10px 12px;" placeholder="Assessment code" autocomplete="off" required>
+      <input type="number" class="search-input assessment-year" style="width: 120px; padding: 10px 12px;" placeholder="Year" min="2000" max="2100" required>
       <button type="button" class="btn-remove-row" style="background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; padding: 0 4px;">&times;</button>
     `;
 
@@ -328,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadRowsContainer.appendChild(row);
   });
 
-  // Handle Upload Form Submit (PDF uploads + parsing)
+  // Handle browser document grabber import.
   uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -342,55 +354,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Validate duplicate years in form
     const selectedYears = [];
+    const assessments = [];
     let valid = true;
     rows.forEach(row => {
-      const year = row.querySelector('select').value;
+      const code = row.querySelector('.assessment-code').value.trim();
+      const year = row.querySelector('.assessment-year').value.trim();
+      if (!code || !year) valid = false;
       if (selectedYears.includes(year)) {
         alert(`Duplicate year assigned: ${year}. Each report must have a unique year.`);
         valid = false;
       }
       selectedYears.push(year);
+      assessments.push({ code, year });
     });
 
-    if (!valid) return;
+    if (!valid) {
+      alert("Please provide an assessment code and a unique year for every row.");
+      return;
+    }
 
     // Show processing status
     modalSpinner.style.display = 'flex';
 
     try {
-      // Loop over rows and upload sequentially
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const fileInput = row.querySelector('input[type="file"]');
-        const yearSelect = row.querySelector('select');
-        
-        const file = fileInput.files[0];
-        const year = yearSelect.value;
-
-        if (!file || !year) continue;
-
-        spinnerStatus.textContent = `Processing ${file.name} for year ${year}...`;
-
-        const formData = new FormData();
-        formData.append('company_name', companyName);
-        formData.append('year', year);
-        formData.append('file', file);
-
-        const response = await fetch('/api/portcos/upload', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) {
-          const errMsg = await response.text();
-          throw new Error(`Upload failed for ${file.name}: ${errMsg}`);
-        }
+      spinnerStatus.textContent = "Waiting for browser sign-in and importing assessments...";
+      const response = await fetch('/api/portcos/grab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company_name: companyName, assessments })
+      });
+      if (!response.ok) {
+        const errMsg = await response.text();
+        throw new Error(errMsg || 'Document grabber import failed');
       }
+      const result = await response.json();
 
       spinnerStatus.textContent = "Updating portfolio database...";
       
       // Reload Portfolio List, selecting the new company
       loadPortfolio(companyName);
+
+      if (result.warnings && result.warnings.length > 0) {
+        alert(`Import completed with a browser selector warning:\n\n${result.warnings.join('\n')}`);
+      }
       
       // Close modal
       setTimeout(closeModal, 800);

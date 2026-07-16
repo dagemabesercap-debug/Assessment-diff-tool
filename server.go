@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -265,6 +266,10 @@ func main() {
 	// API Handlers
 	http.HandleFunc("/api/portcos", handlePortcos)
 	http.HandleFunc("/api/portcos/upload", handleUpload)
+	http.HandleFunc("/api/portcos/grab", handleGrabAssessments)
+	http.HandleFunc("/api/attachments", handleAttachmentDownload)
+	http.HandleFunc("/api/reports", handleReportDownload)
+	http.HandleFunc("/api/evidence", handleEvidenceDownload)
 	http.HandleFunc("/api/diff", handleDiff)
 
 	// Serve Static Files
@@ -491,6 +496,310 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Successfully saved parsed JSON and updated scores for %s (%s)\n", companyName, year)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"success":true}`))
+}
+
+type grabAssessmentsPayload struct {
+	CompanyName string                  `json:"company_name"`
+	Assessments []assessmentGrabRequest `json:"assessments"`
+}
+
+func handleGrabAssessments(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var payload grabAssessmentsPayload
+	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&payload); err != nil {
+		http.Error(w, "Invalid request: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	payload.CompanyName = strings.TrimSpace(payload.CompanyName)
+	portcoDir, err := portcoDataDir(payload.CompanyName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if len(payload.Assessments) == 0 {
+		http.Error(w, "At least one assessment code and year is required", http.StatusBadRequest)
+		return
+	}
+	seenYears := make(map[string]bool)
+	for index := range payload.Assessments {
+		assessment := &payload.Assessments[index]
+		assessment.Year = strings.TrimSpace(assessment.Year)
+		assessment.Code = strings.TrimSpace(assessment.Code)
+		if assessment.Year == "" || assessment.Code == "" {
+			http.Error(w, "Every assessment requires both a code and a year", http.StatusBadRequest)
+			return
+		}
+		if strings.ContainsAny(assessment.Year, `/\\:`) || assessment.Year == "." || assessment.Year == ".." {
+			http.Error(w, "Invalid assessment year", http.StatusBadRequest)
+			return
+		}
+		if seenYears[assessment.Year] {
+			http.Error(w, "Each assessment year must be unique", http.StatusBadRequest)
+			return
+		}
+		seenYears[assessment.Year] = true
+	}
+	if err := os.MkdirAll(portcoDir, 0755); err != nil {
+		http.Error(w, "Failed to create company folder: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	grabbed, err := grabAssessments(portcoDir, payload.Assessments)
+	if err != nil {
+		http.Error(w, "Document grabber failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for _, assessment := range grabbed {
+		debugLogJSON(fmt.Sprintf("document_grabber: browser scrape for %s (%s)", payload.CompanyName, assessment.Year), assessment.Scrape)
+		if err := importGrabbedAssessment(payload.CompanyName, portcoDir, assessment); err != nil {
+			http.Error(w, "Failed to import "+assessment.Year+": "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	warnings := make([]string, 0)
+	for _, assessment := range grabbed {
+		nonEmptyComments := 0
+		nonEmptyResponses := 0
+		for _, question := range assessment.Scrape.Questions {
+			if strings.TrimSpace(question.Comments) != "" {
+				nonEmptyComments++
+			}
+			if strings.TrimSpace(question.FreeResponse) != "" {
+				nonEmptyResponses++
+			}
+		}
+		if nonEmptyComments == 0 {
+			warnings = append(warnings, fmt.Sprintf("No non-empty browser comments were extracted for %s; inspect the assessment page comment element if comments were expected.", assessment.Year))
+		}
+		if nonEmptyResponses == 0 {
+			warnings = append(warnings, fmt.Sprintf("No non-empty browser written responses were extracted for %s; %d response cards were loaded.", assessment.Year, assessment.Scrape.ResponseCardCount))
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"success": true, "company_name": payload.CompanyName, "years": len(grabbed), "warnings": warnings})
+}
+
+func importGrabbedAssessment(companyName, portcoDir string, assessment grabbedAssessment) error {
+	questions, err := parsePDF(assessment.ReportPath)
+	if err != nil {
+		return fmt.Errorf("parse downloaded result summary: %w", err)
+	}
+	scrapedByNumber := make(map[string]scrapedQuestion, len(assessment.Scrape.Questions))
+	responseNumbers := make(map[string]bool)
+	for _, scraped := range assessment.Scrape.Questions {
+		scrapedByNumber[scraped.QuestionNumber] = scraped
+		if strings.TrimSpace(scraped.Comments) != "" || strings.TrimSpace(scraped.FreeResponse) != "" {
+			responseNumbers[scraped.QuestionNumber] = true
+		}
+	}
+	matchedResponseNumbers := make(map[string]bool)
+	for index := range questions {
+		scraped, ok := scrapedByNumber[questions[index].Number]
+		if !ok {
+			continue
+		}
+		if responseNumbers[scraped.QuestionNumber] {
+			matchedResponseNumbers[scraped.QuestionNumber] = true
+		}
+		browserComments := strings.TrimSpace(scraped.Comments)
+		if browserComments != "" {
+			questions[index].Comments = browserComments
+		}
+		browserFreeResponse := strings.TrimSpace(scraped.FreeResponse)
+		if browserFreeResponse != "" {
+			questions[index].FreeResponse = browserFreeResponse
+		}
+		if len(scraped.Attachments) > 0 {
+			questions[index].Attachments = questions[index].Attachments[:0]
+			for _, item := range scraped.Attachments {
+				questions[index].Attachments = append(questions[index].Attachments, item.Name)
+			}
+		}
+	}
+	if len(responseNumbers) > len(matchedResponseNumbers) {
+		unmatched := make([]string, 0, len(responseNumbers)-len(matchedResponseNumbers))
+		for number := range responseNumbers {
+			if !matchedResponseNumbers[number] {
+				unmatched = append(unmatched, number)
+			}
+		}
+		sort.Strings(unmatched)
+		return fmt.Errorf("browser responses were extracted but could not be matched to report questions: %s", strings.Join(unmatched, ", "))
+	}
+
+	jsonData, err := json.MarshalIndent(questions, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(filepath.Join(portcoDir, assessment.Year+".json"), jsonData, 0644); err != nil {
+		return err
+	}
+	overall, categoryScores, foundSummaryScores, scoreErr := parseAssessmentScores(assessment.ReportPath)
+	if scoreErr != nil {
+		debugLogf("document_grabber: score parsing failed for %s (%s): %v", companyName, assessment.Year, scoreErr)
+	}
+	if !foundSummaryScores {
+		overall, categoryScores = calculateScoresForQuestions(questions)
+	}
+	return upsertPortcoAssessment(companyName, assessment.Year, overall, categoryScores)
+}
+
+func upsertPortcoAssessment(companyName, year string, overall int, categoryScores map[string]int) error {
+	portcos, err := loadPortcos()
+	if err != nil {
+		return err
+	}
+	for index := range portcos {
+		if portcos[index].Name != companyName {
+			continue
+		}
+		p := &portcos[index]
+		if p.Scores == nil {
+			p.Scores = make(map[string]int)
+		}
+		if p.CategoryScores == nil {
+			p.CategoryScores = make(map[string]map[string]int)
+		}
+		found := false
+		for _, existingYear := range p.Years {
+			if existingYear == year {
+				found = true
+				break
+			}
+		}
+		if !found {
+			p.Years = append(p.Years, year)
+			sort.Strings(p.Years)
+		}
+		p.Scores[year] = overall
+		p.CategoryScores[year] = categoryScores
+		return savePortcos(portcos)
+	}
+	portcos = append(portcos, Portco{
+		Name: companyName, Years: []string{year},
+		Scores:         map[string]int{year: overall},
+		CategoryScores: map[string]map[string]int{year: categoryScores},
+	})
+	return savePortcos(portcos)
+}
+
+func handleAttachmentDownload(w http.ResponseWriter, r *http.Request) {
+	company, year := r.URL.Query().Get("portco"), r.URL.Query().Get("year")
+	question, filename := r.URL.Query().Get("question"), filepath.Base(r.URL.Query().Get("file"))
+	portcoDir, err := portcoDataDir(company)
+	if err != nil || !validStoragePart(year) || !validStoragePart(question) || filename == "" || filename == "." {
+		http.Error(w, "Invalid attachment request", http.StatusBadRequest)
+		return
+	}
+	path := filepath.Join(portcoDir, year, "attachments", "Question "+sanitizePathPart(question, "Unknown"), filename)
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, filename))
+	http.ServeFile(w, r, path)
+}
+
+func handleReportDownload(w http.ResponseWriter, r *http.Request) {
+	company, year := r.URL.Query().Get("portco"), r.URL.Query().Get("year")
+	portcoDir, err := portcoDataDir(company)
+	if err != nil || !validStoragePart(year) {
+		http.Error(w, "Invalid report request", http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, sanitizePathPart(company+" - Assessment Report ("+year+").pdf", "assessment-report.pdf")))
+	http.ServeFile(w, r, filepath.Join(portcoDir, year+".pdf"))
+}
+
+func handleEvidenceDownload(w http.ResponseWriter, r *http.Request) {
+	company, year := r.URL.Query().Get("portco"), r.URL.Query().Get("year")
+	portcoDir, err := portcoDataDir(company)
+	if err != nil || !validStoragePart(year) {
+		http.Error(w, "Invalid evidence request", http.StatusBadRequest)
+		return
+	}
+
+	attachmentsRoot := filepath.Join(portcoDir, year, "attachments")
+	files, err := evidenceFiles(attachmentsRoot)
+	if err != nil {
+		if os.IsNotExist(err) {
+			http.Error(w, "No evidence files found for this assessment year", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Failed to read evidence files: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(files) == 0 {
+		http.Error(w, "No evidence files found for this assessment year", http.StatusNotFound)
+		return
+	}
+
+	filename := sanitizePathPart(company+" - Evidence ("+year+").zip", "assessment-evidence.zip")
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, filename))
+
+	archive := zip.NewWriter(w)
+	for _, path := range files {
+		info, err := os.Stat(path)
+		if err != nil {
+			archive.Close()
+			return
+		}
+		relativePath, err := filepath.Rel(attachmentsRoot, path)
+		if err != nil {
+			archive.Close()
+			return
+		}
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			archive.Close()
+			return
+		}
+		header.Name = filepath.ToSlash(relativePath)
+		header.Method = zip.Deflate
+		entry, err := archive.CreateHeader(header)
+		if err != nil {
+			archive.Close()
+			return
+		}
+		file, err := os.Open(path)
+		if err != nil {
+			archive.Close()
+			return
+		}
+		_, copyErr := io.Copy(entry, file)
+		closeErr := file.Close()
+		if copyErr != nil || closeErr != nil {
+			archive.Close()
+			return
+		}
+	}
+	_ = archive.Close()
+}
+
+func evidenceFiles(root string) ([]string, error) {
+	files := make([]string, 0)
+	err := filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.Type().IsRegular() {
+			files = append(files, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	sort.Strings(files)
+	return files, nil
+}
+
+func validStoragePart(value string) bool {
+	return value != "" && value != "." && value != ".." && !filepath.IsAbs(value) && !strings.ContainsAny(value, `/\\:`) && !strings.ContainsRune(value, 0)
 }
 
 func handleDiff(w http.ResponseWriter, r *http.Request) {

@@ -23,22 +23,24 @@ type EvidenceDiff struct {
 }
 
 type AlignedQuestionDiff struct {
-	Category        string         `json:"category"`
-	Q2025Number     string         `json:"q2025_number,omitempty"`
-	Q2026Number     string         `json:"q2026_number,omitempty"`
-	Text2025        string         `json:"text_2025,omitempty"`
-	Text2026        string         `json:"text_2026,omitempty"`
-	IsNew           bool           `json:"isNew"`
-	IsDeleted       bool           `json:"isDeleted"`
-	Score2025       string         `json:"score_2025,omitempty"`
-	Score2026       string         `json:"score_2026,omitempty"`
-	ScoreDelta      *float64       `json:"score_delta,omitempty"`
-	Comments2025    string         `json:"comments_2025,omitempty"`
-	Comments2026    string         `json:"comments_2026,omitempty"`
-	Attachments2025 []string       `json:"attachments_2025,omitempty"`
-	Attachments2026 []string       `json:"attachments_2026,omitempty"`
-	OptionsDiff     []OptionDiff   `json:"options_diff,omitempty"`
-	EvidenceDiff    []EvidenceDiff `json:"evidence_diff,omitempty"`
+	Category         string         `json:"category"`
+	Q2025Number      string         `json:"q2025_number,omitempty"`
+	Q2026Number      string         `json:"q2026_number,omitempty"`
+	Text2025         string         `json:"text_2025,omitempty"`
+	Text2026         string         `json:"text_2026,omitempty"`
+	IsNew            bool           `json:"isNew"`
+	IsDeleted        bool           `json:"isDeleted"`
+	Score2025        string         `json:"score_2025,omitempty"`
+	Score2026        string         `json:"score_2026,omitempty"`
+	ScoreDelta       *float64       `json:"score_delta,omitempty"`
+	Comments2025     string         `json:"comments_2025,omitempty"`
+	Comments2026     string         `json:"comments_2026,omitempty"`
+	FreeResponse2025 string         `json:"free_response_2025,omitempty"`
+	FreeResponse2026 string         `json:"free_response_2026,omitempty"`
+	Attachments2025  []string       `json:"attachments_2025,omitempty"`
+	Attachments2026  []string       `json:"attachments_2026,omitempty"`
+	OptionsDiff      []OptionDiff   `json:"options_diff,omitempty"`
+	EvidenceDiff     []EvidenceDiff `json:"evidence_diff,omitempty"`
 }
 
 func tokenize(s string) map[string]bool {
@@ -162,19 +164,21 @@ func CompareQuestionLists(q2025, q2026 []Question) []AlignedQuestionDiff {
 
 func alignQuestions(q25, q26 Question) AlignedQuestionDiff {
 	diff := AlignedQuestionDiff{
-		Category:        q26.Category,
-		Q2025Number:     q25.Number,
-		Q2026Number:     q26.Number,
-		Text2025:        q25.Text,
-		Text2026:        q26.Text,
-		IsNew:           false,
-		IsDeleted:       false,
-		Score2025:       q25.Score,
-		Score2026:       q26.Score,
-		Comments2025:    q25.Comments,
-		Comments2026:    q26.Comments,
-		Attachments2025: q25.Attachments,
-		Attachments2026: q26.Attachments,
+		Category:         q26.Category,
+		Q2025Number:      q25.Number,
+		Q2026Number:      q26.Number,
+		Text2025:         q25.Text,
+		Text2026:         q26.Text,
+		IsNew:            false,
+		IsDeleted:        false,
+		Score2025:        q25.Score,
+		Score2026:        q26.Score,
+		Comments2025:     q25.Comments,
+		Comments2026:     q26.Comments,
+		FreeResponse2025: q25.FreeResponse,
+		FreeResponse2026: q26.FreeResponse,
+		Attachments2025:  q25.Attachments,
+		Attachments2026:  q26.Attachments,
 	}
 
 	s25, ok25 := parseScore(q25.Score)
@@ -192,14 +196,15 @@ func alignQuestions(q25, q26 Question) AlignedQuestionDiff {
 
 func alignNewQuestion(q26 Question) AlignedQuestionDiff {
 	diff := AlignedQuestionDiff{
-		Category:        q26.Category,
-		Q2026Number:     q26.Number,
-		Text2026:        q26.Text,
-		IsNew:           true,
-		IsDeleted:       false,
-		Score2026:       q26.Score,
-		Comments2026:    q26.Comments,
-		Attachments2026: q26.Attachments,
+		Category:         q26.Category,
+		Q2026Number:      q26.Number,
+		Text2026:         q26.Text,
+		IsNew:            true,
+		IsDeleted:        false,
+		Score2026:        q26.Score,
+		Comments2026:     q26.Comments,
+		FreeResponse2026: q26.FreeResponse,
+		Attachments2026:  q26.Attachments,
 	}
 
 	for _, opt := range q26.Options {
@@ -225,14 +230,15 @@ func alignNewQuestion(q26 Question) AlignedQuestionDiff {
 
 func alignDeletedQuestion(q25 Question) AlignedQuestionDiff {
 	diff := AlignedQuestionDiff{
-		Category:        q25.Category,
-		Q2025Number:     q25.Number,
-		Text2025:        q25.Text,
-		IsNew:           false,
-		IsDeleted:       true,
-		Score2025:       q25.Score,
-		Comments2025:    q25.Comments,
-		Attachments2025: q25.Attachments,
+		Category:         q25.Category,
+		Q2025Number:      q25.Number,
+		Text2025:         q25.Text,
+		IsNew:            false,
+		IsDeleted:        true,
+		Score2025:        q25.Score,
+		Comments2025:     q25.Comments,
+		FreeResponse2025: q25.FreeResponse,
+		Attachments2025:  q25.Attachments,
 	}
 
 	for _, opt := range q25.Options {
