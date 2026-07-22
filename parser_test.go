@@ -51,6 +51,7 @@ func TestParsePDFStudioDesignerAssessmentShape(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			requireFixture(t, tt.path)
 			questions, err := parsePDF(tt.path)
 			if err != nil {
 				t.Fatalf("parsePDF failed: %v", err)
@@ -86,6 +87,8 @@ func TestParsePDFMatchesReferenceJSONForStudioDesigner(t *testing.T) {
 		"Serent Capital - Studio Designer (2026).pdf",
 	} {
 		t.Run(path, func(t *testing.T) {
+			requireFixture(t, path)
+			requireFixture(t, path+".json")
 			got, err := parsePDF(path)
 			if err != nil {
 				t.Fatalf("parsePDF failed: %v", err)
@@ -149,6 +152,7 @@ func TestParsePDFStudioDesignerSummaryScores(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			requireFixture(t, tt.path)
 			overall, categories, ok, err := parseAssessmentScores(tt.path)
 			if err != nil {
 				t.Fatalf("parseAssessmentScores failed: %v", err)
@@ -166,5 +170,14 @@ func TestParsePDFStudioDesignerSummaryScores(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func requireFixture(t *testing.T, path string) {
+	t.Helper()
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		t.Skipf("integration fixture %q is intentionally not stored in the repository", path)
+	} else if err != nil {
+		t.Fatalf("failed checking fixture %q: %v", path, err)
 	}
 }

@@ -9,3 +9,14 @@
 
 # Runtime debug logs
 logs/
+
+# Runtime assessment data and local configuration
+data/
+assessment-data/
+.env
+secrets/
+
+# Build outputs
+assessment_diff_tool
+assessment_diff_tool.exe
+*.test

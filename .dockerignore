@@ -1,0 +1,20 @@
+.git
+.gitignore
+.env
+.cache
+.tools
+.agents
+data
+assessment-data
+logs
+secrets
+*.exe
+*.test
+*.pdf
+*.zip
+*.json
+UI Inspiration
+Progress_Learning
+pdf_json_parser
+pdf_reader
+PLAN.md

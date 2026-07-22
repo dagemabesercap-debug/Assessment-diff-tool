@@ -1,2 +1,0 @@
-Administrator account hardening — Multiselect
-Weight: 3

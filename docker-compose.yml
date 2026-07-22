@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: assessment-diff-tool:topush
+    restart: unless-stopped
+    environment:
+      ASSESSMENT_DATA_DIR: /var/lib/assessment-diff-tool
+      DISPLAY: ":99"
+      PORT: "8090"
+      VNC_PASSWORD: "${VNC_PASSWORD:?set VNC_PASSWORD in .env}"
+    ports:
+      - "${APP_BIND_IP:-127.0.0.1}:${APP_PORT:-8090}:8090"
+      - "127.0.0.1:${NOVNC_PORT:-6080}:6080"
+    volumes:
+      - assessment-data:/var/lib/assessment-diff-tool
+    read_only: true
+    tmpfs:
+      - /tmp:size=1g,mode=1777
+    shm_size: 1gb
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 6g
+    cpus: 2.0
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8090/health/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  assessment-data:

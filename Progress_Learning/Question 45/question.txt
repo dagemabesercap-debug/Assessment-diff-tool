@@ -1,2 +1,0 @@
-Network Device Configuration and Patch Management — Multiselect
-Weight: 3

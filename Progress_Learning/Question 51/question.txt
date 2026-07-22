@@ -1,2 +1,0 @@
-Encryption at Rest — Multiselect
-Weight: 3

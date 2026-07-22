@@ -1,2 +1,0 @@
-Monitoring, Alerting and Response — Multiselect
-Weight: 3

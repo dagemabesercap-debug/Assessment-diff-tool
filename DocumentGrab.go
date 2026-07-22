@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/chromedp/cdproto/network"
@@ -22,6 +23,7 @@ import (
 const assessmentURLFormat = "https://assessment.corsis.com/serent/admin/assessments/%s"
 
 var invalidFilenameCharacters = regexp.MustCompile(`[<>:"/\\|?*\x00-\x1f]`)
+var browserImportMutex sync.Mutex
 
 type attachment struct {
 	QuestionNumber string `json:"questionNumber"`
@@ -68,6 +70,9 @@ type grabbedAssessment struct {
 // grabAssessments opens one visible browser so the user signs in once, then
 // imports every requested assessment with the same authenticated session.
 func grabAssessments(companyDirectory string, requests []assessmentGrabRequest) ([]grabbedAssessment, error) {
+	browserImportMutex.Lock()
+	defer browserImportMutex.Unlock()
+
 	profileDirectory, err := os.MkdirTemp("", "assessment-document-grabber-")
 	if err != nil {
 		return nil, fmt.Errorf("create browser profile: %w", err)

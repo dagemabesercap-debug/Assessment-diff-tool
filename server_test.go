@@ -133,6 +133,8 @@ func TestHandleDeletePortcoRejectsUnsafeName(t *testing.T) {
 func withTempWorkingDir(t *testing.T) {
 	t.Helper()
 
+	originalDataDirectory := dataDirectory
+	dataDirectory = "data"
 	originalWd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("failed getting working dir: %v", err)
@@ -141,6 +143,7 @@ func withTempWorkingDir(t *testing.T) {
 		t.Fatalf("failed changing working dir: %v", err)
 	}
 	t.Cleanup(func() {
+		dataDirectory = originalDataDirectory
 		if err := os.Chdir(originalWd); err != nil {
 			t.Fatalf("failed restoring working dir: %v", err)
 		}

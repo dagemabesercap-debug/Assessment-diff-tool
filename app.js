@@ -49,26 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       })
       .catch(err => {
-        console.error("Failed to load portfolio database from server. Loading fallback mockup...", err);
-        // Fallback mockup data if offline
-        loadOfflineMockup();
+        console.error("Failed to load portfolio database from server.", err);
+        portcos = [];
+        clearSelectedPortco();
       });
-  }
-
-  function loadOfflineMockup() {
-    portcos = [
-      {
-        name: "Studio Designer",
-        years: ["2025", "2026"],
-        scores: { "2025": 83, "2026": 63 },
-        categoryScores: {
-          "2025": { "ORGANIZATION AND PLANNING": 64, "TECHNICAL AND TOOLING": 100, "SECURE PROCESS": 76, "RECURRING HYGIENE": 55 },
-          "2026": { "ORGANIZATION AND PLANNING": 72, "TECHNICAL AND TOOLING": 64, "SECURE PROCESS": 73, "RECURRING HYGIENE": 39 }
-        }
-      }
-    ];
-    renderPortcoList();
-    selectPortco(portcos[0]);
   }
 
   function clearSelectedPortco() {

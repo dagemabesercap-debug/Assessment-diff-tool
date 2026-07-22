@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Portco struct {
@@ -22,59 +23,28 @@ type Portco struct {
 	CategoryScores map[string]map[string]int `json:"categoryScores"`
 }
 
-const defaultStudioDesignerName = "Studio Designer"
-const parserDebugLogPath = "logs/pdf_json_parser.log"
-
 var (
 	debugMode         bool
 	parserDebugLogger *log.Logger
+	dataDirectory     = envOrDefault("ASSESSMENT_DATA_DIR", "data")
 )
 
-var defaultStudioDesignerJSON = map[string][]string{
-	"2025": {
-		filepath.Join("pdf_json_parser", "Serent Capital - Studio Designer (2025).pdf.json"),
-		"Serent Capital - Studio Designer (2025).pdf.json",
-	},
-	"2026": {
-		filepath.Join("pdf_json_parser", "Serent Capital - Studio Designer (2026).pdf.json"),
-		"Serent Capital - Studio Designer (2026).pdf.json",
-	},
+func envOrDefault(name, fallback string) string {
+	if value := strings.TrimSpace(os.Getenv(name)); value != "" {
+		return value
+	}
+	return fallback
+}
+
+func parserDebugLogPath() string {
+	return filepath.Join(dataDirectory, "logs", "pdf_json_parser.log")
 }
 
 func loadPortcos() ([]Portco, error) {
-	dbPath := filepath.Join("data", "portcos.json")
+	dbPath := filepath.Join(dataDirectory, "portcos.json")
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-		// Initialize with default Studio Designer data if local JSONs are present
 		portcos := []Portco{}
-		studio := Portco{
-			Name:  defaultStudioDesignerName,
-			Years: []string{"2025", "2026"},
-			Scores: map[string]int{
-				"2025": 83,
-				"2026": 63,
-			},
-			CategoryScores: map[string]map[string]int{
-				"2025": {
-					"ORGANIZATION AND PLANNING": 64,
-					"TECHNICAL AND TOOLING":     100,
-					"SECURE PROCESS":            76,
-					"RECURRING HYGIENE":         55,
-				},
-				"2026": {
-					"ORGANIZATION AND PLANNING": 72,
-					"TECHNICAL AND TOOLING":     64,
-					"SECURE PROCESS":            73,
-					"RECURRING HYGIENE":         39,
-				},
-			},
-		}
-		portcos = append(portcos, studio)
-
-		// Create data folder and save db
-		if err := os.MkdirAll("data", 0755); err != nil {
-			return nil, err
-		}
-		if err := ensureDefaultStudioDesignerJSON(portcos); err != nil {
+		if err := os.MkdirAll(dataDirectory, 0700); err != nil {
 			return nil, err
 		}
 		if err := savePortcos(portcos); err != nil {
@@ -96,11 +66,14 @@ func loadPortcos() ([]Portco, error) {
 		return nil, err
 	}
 
-	return portcos, ensureDefaultStudioDesignerJSON(portcos)
+	return portcos, nil
 }
 
 func savePortcos(portcos []Portco) error {
-	dbPath := filepath.Join("data", "portcos.json")
+	if err := os.MkdirAll(dataDirectory, 0700); err != nil {
+		return err
+	}
+	dbPath := filepath.Join(dataDirectory, "portcos.json")
 	f, err := os.Create(dbPath)
 	if err != nil {
 		return err
@@ -110,23 +83,6 @@ func savePortcos(portcos []Portco) error {
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(portcos)
-}
-
-func copyFile(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	_, err = io.Copy(out, in)
-	return err
 }
 
 func portcoDataDir(companyName string) (string, error) {
@@ -141,7 +97,7 @@ func portcoDataDir(companyName string) (string, error) {
 		return "", fmt.Errorf("company name is invalid")
 	}
 
-	return filepath.Join("data", "portcos", companyName), nil
+	return filepath.Join(dataDirectory, "portcos", companyName), nil
 }
 
 func configureDebugLogging(enabled bool) (*os.File, error) {
@@ -149,11 +105,12 @@ func configureDebugLogging(enabled bool) (*os.File, error) {
 		return nil, nil
 	}
 
-	if err := os.MkdirAll(filepath.Dir(parserDebugLogPath), 0755); err != nil {
+	logPath := parserDebugLogPath()
+	if err := os.MkdirAll(filepath.Dir(logPath), 0700); err != nil {
 		return nil, err
 	}
 
-	logFile, err := os.OpenFile(parserDebugLogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
 		return nil, err
 	}
@@ -184,59 +141,6 @@ func debugLogJSON(label string, value any) {
 	debugLogf("%s:\n%s", label, data)
 }
 
-func ensureDefaultStudioDesignerJSON(portcos []Portco) error {
-	var studio *Portco
-	for idx := range portcos {
-		if portcos[idx].Name == defaultStudioDesignerName {
-			studio = &portcos[idx]
-			break
-		}
-	}
-	if studio == nil {
-		return nil
-	}
-
-	studioDataDir := filepath.Join("data", "portcos", defaultStudioDesignerName)
-	if err := os.MkdirAll(studioDataDir, 0755); err != nil {
-		return err
-	}
-
-	for _, year := range studio.Years {
-		sourceCandidates, ok := defaultStudioDesignerJSON[year]
-		if !ok {
-			continue
-		}
-
-		dst := filepath.Join(studioDataDir, year+".json")
-		if _, err := os.Stat(dst); err == nil {
-			continue
-		} else if !os.IsNotExist(err) {
-			return err
-		}
-
-		copied := false
-		for _, src := range sourceCandidates {
-			if _, err := os.Stat(src); err != nil {
-				if os.IsNotExist(err) {
-					continue
-				}
-				return err
-			}
-			if err := copyFile(src, dst); err != nil {
-				return err
-			}
-			copied = true
-			break
-		}
-
-		if !copied {
-			return fmt.Errorf("missing bundled Studio Designer JSON for %s", year)
-		}
-	}
-
-	return nil
-}
-
 func main() {
 	flag.BoolVar(&debugMode, "debug", false, "write PDF parser debug output to logs/pdf_json_parser.log")
 	flag.Parse()
@@ -251,7 +155,7 @@ func main() {
 				fmt.Printf("Error closing debug log: %v\n", err)
 			}
 		}()
-		fmt.Printf("Debug logging enabled at %s\n", parserDebugLogPath)
+		fmt.Printf("Debug logging enabled at %s\n", parserDebugLogPath())
 	}
 
 	// Initialize data folders and DB
@@ -260,7 +164,10 @@ func main() {
 		fmt.Printf("Error initializing database: %v\n", err)
 	}
 
-	port := ":8090"
+	port := envOrDefault("PORT", "8090")
+	if !strings.Contains(port, ":") {
+		port = ":" + port
+	}
 	fmt.Printf("Starting Portfolio Assessment Server on http://localhost%s\n", port)
 
 	// API Handlers
@@ -271,15 +178,35 @@ func main() {
 	http.HandleFunc("/api/reports", handleReportDownload)
 	http.HandleFunc("/api/evidence", handleEvidenceDownload)
 	http.HandleFunc("/api/diff", handleDiff)
+	http.HandleFunc("/health/live", handleHealth)
+	http.HandleFunc("/health/ready", handleHealth)
 
-	// Serve Static Files
-	fs := http.FileServer(http.Dir("."))
-	http.Handle("/", fs)
+	http.Handle("/", http.FileServer(http.FS(staticFiles)))
 
-	err = http.ListenAndServe(port, nil)
+	server := &http.Server{
+		Addr:              port,
+		Handler:           http.DefaultServeMux,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+	err = server.ListenAndServe()
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if _, err := os.Stat(filepath.Join(dataDirectory, "portcos.json")); err != nil {
+		http.Error(w, "storage unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(`{"status":"ok"}`))
 }
 
 // Handlers

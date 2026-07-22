@@ -81,24 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentData = diffResult.data;
       initializeDashboard();
     } else {
-      // Fallback offline mode for Studio Designer 2025 vs 2026
-      if (activePortco === 'Studio Designer' && yearA === '2025' && yearB === '2026' && typeof diffReportData !== 'undefined') {
-        if (diffResult.error) {
-          console.warn('Using bundled diff data after API failure:', diffResult.error);
-        }
-        currentData = diffReportData;
-        
-        // Hardcode fallback header scores
-        updateHeaderScores(83, 63);
-        categoryScores["ORGANIZATION AND PLANNING"] = { score2025: 64, score2026: 72, icon: "📋" };
-        categoryScores["TECHNICAL AND TOOLING"] = { score2025: 100, score2026: 64, icon: "🛠️" };
-        categoryScores["SECURE PROCESS"] = { score2025: 76, score2026: 73, icon: "🔒" };
-        categoryScores["RECURRING HYGIENE"] = { score2025: 55, score2026: 39, icon: "🔄" };
-
-        initializeDashboard();
-      } else {
-        renderErrorMessage(diffResult.error);
-      }
+      renderErrorMessage(diffResult.error);
     }
   });
 
