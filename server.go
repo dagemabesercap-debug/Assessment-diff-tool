@@ -1,6 +1,8 @@
 package main
 
 import (
+	"sync"
+
 	"archive/zip"
 	"encoding/json"
 	"flag"
@@ -24,6 +26,7 @@ type Portco struct {
 }
 
 var (
+	portcosMutex sync.Mutex
 	debugMode         bool
 	parserDebugLogger *log.Logger
 	dataDirectory     = envOrDefault("ASSESSMENT_DATA_DIR", "data")
@@ -235,6 +238,9 @@ func handleListPortcos(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleDeletePortco(w http.ResponseWriter, r *http.Request) {
+	portcosMutex.Lock()
+	defer portcosMutex.Unlock()
+
 	companyName := strings.TrimSpace(r.URL.Query().Get("name"))
 	if companyName == "" {
 		http.Error(w, "Missing query parameter: name", http.StatusBadRequest)
@@ -316,6 +322,9 @@ func handleDeletePortco(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleUpload(w http.ResponseWriter, r *http.Request) {
+	portcosMutex.Lock()
+	defer portcosMutex.Unlock()
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -552,6 +561,9 @@ func handleGrabAssessments(w http.ResponseWriter, r *http.Request) {
 }
 
 func importGrabbedAssessment(companyName, portcoDir string, assessment grabbedAssessment) error {
+	portcosMutex.Lock()
+	defer portcosMutex.Unlock()
+
 	questions, err := parsePDF(assessment.ReportPath)
 	if err != nil {
 		return fmt.Errorf("parse downloaded result summary: %w", err)
