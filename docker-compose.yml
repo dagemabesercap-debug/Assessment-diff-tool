@@ -15,12 +15,15 @@ services:
       - "127.0.0.1:${NOVNC_PORT:-6080}:6080"
     volumes:
       - assessment-data:/var/lib/assessment-diff-tool
-    read_only: true
     tmpfs:
       - /tmp:size=1g,mode=1777
     shm_size: 1gb
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
     security_opt:
       - no-new-privileges:true
     mem_limit: 6g

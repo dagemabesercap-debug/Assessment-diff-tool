@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="index.html" style="text-decoration: none; color: inherit; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <span style="font-size: 14px; background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 99px;">← Portfolio Hub</span>
         </a>
-        <h1 style="font-size: 26px; font-weight: 800; background: linear-gradient(to right, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <h1 style="font-size: 26px; font-weight: 800; color: #0ea5e9; background: none; -webkit-background-clip: initial; -webkit-text-fill-color: initial;">
           ${activePortco} Assessment Comparison
         </h1>
         <p style="color: var(--text-secondary); font-size: 13px; margin-top: 4px;">
@@ -194,7 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
     container.innerHTML = '';
 
-    const categories = Object.keys(categoryScores);
+    // Define categories to exclude from scorecards (written answers, always N/A)
+    const excludedCategories = ['COMPANY INFORMATION', 'SECURITY TOOLS', 'VALIDATION CALL'];
+    const categories = Object.keys(categoryScores).filter(cat => !excludedCategories.includes(cat));
 
     categories.forEach(cat => {
       const stats = categoryScores[cat];

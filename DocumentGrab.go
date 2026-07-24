@@ -69,13 +69,18 @@ type grabbedAssessment struct {
 
 // grabAssessments opens one visible browser so the user signs in once, then
 // imports every requested assessment with the same authenticated session.
-func grabAssessments(companyDirectory string, requests []assessmentGrabRequest) ([]grabbedAssessment, error) {
+func grabAssessments(ctx context.Context, companyDirectory string, requests []assessmentGrabRequest) ([]grabbedAssessment, error) {
+	fmt.Println("Waiting for mutex...")
 	browserImportMutex.Lock()
-	defer browserImportMutex.Unlock()
+	fmt.Println("Mutex acquired")
+	defer func() {
+		browserImportMutex.Unlock()
+		fmt.Println("Mutex released")
+	}()
 
 	profileDirectory, err := os.MkdirTemp("", "assessment-document-grabber-")
 	if err != nil {
-		return nil, fmt.Errorf("create browser profile: %w", err)
+		return nil, fmt.Errorf("create temporary profile directory: %w", err)
 	}
 	defer os.RemoveAll(profileDirectory)
 
@@ -86,9 +91,11 @@ func grabAssessments(companyDirectory string, requests []assessmentGrabRequest) 
 		chromedp.Flag("disable-crash-reporter", true),
 		chromedp.Flag("disable-breakpad", true),
 		chromedp.Flag("disable-features", "Crashpad"),
+		chromedp.Flag("start-fullscreen", true),
+		chromedp.Flag("window-size", "1440,900"),
 		chromedp.UserDataDir(profileDirectory),
 	)
-	allocatorContext, cancelAllocator := chromedp.NewExecAllocator(context.Background(), allocatorOptions...)
+	allocatorContext, cancelAllocator := chromedp.NewExecAllocator(ctx, allocatorOptions...)
 	defer cancelAllocator()
 	browserContext, cancelBrowser := chromedp.NewContext(allocatorContext)
 	defer cancelBrowser()
@@ -165,6 +172,9 @@ func waitForAssessment(ctx context.Context, targetURL string, timeout time.Durat
 	deadline := time.Now().Add(timeout)
 	lastRedirect := time.Time{}
 	for time.Now().Before(deadline) {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		var ready bool
 		var currentURL string
 		err := chromedp.Run(ctx,
@@ -213,6 +223,9 @@ func waitForIndicatorResponses(ctx context.Context, timeout time.Duration) error
 	lastCount := -1
 	stableChecks := 0
 	for time.Now().Before(deadline) {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		var state struct {
 			Cards int `json:"cards"`
 			Busy  int `json:"busy"`

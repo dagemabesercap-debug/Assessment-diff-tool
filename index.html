@@ -52,12 +52,12 @@
           
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
             <div>
-              <h2 id="active-portco-name" style="font-size: 24px; font-weight: 800; background: linear-gradient(to right, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              <h2 id="active-portco-name" style="font-size: 24px; font-weight: 800; background: linear-gradient(to right, #0f172a, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 Studio Designer
               </h2>
-              <p id="active-portco-years-desc" style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+              <div id="active-portco-years-desc" style="font-size: 13px; color: var(--text-secondary); margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                 Assessment history: 2025, 2026
-              </p>
+              </div>
             </div>
             
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -65,14 +65,17 @@
               <div id="active-portco-summary-badge" class="delta-badge negative" style="padding: 8px 16px;">
                 -20pt change (2025 -> 2026)
               </div>
+              <button type="button" class="filter-btn" id="btn-add-year" style="border-color: rgba(14, 165, 233, 0.35); color: var(--primary); padding: 8px 14px; font-weight: 700;">
+                + Add Year
+              </button>
               <button type="button" class="filter-btn" id="btn-delete-portco" style="border-color: rgba(239, 68, 68, 0.35); color: var(--danger); padding: 8px 14px; font-weight: 700;">
-                Delete
+                Delete Company
               </button>
             </div>
           </div>
 
           <!-- Trend Chart Container -->
-          <div class="glass-panel" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); padding: 24px; border-radius: 12px; position: relative; height: 280px;">
+          <div class="glass-panel" style="background: rgba(248, 250, 252, 0.85); border: 1px solid rgba(255,255,255,0.04); padding: 24px; border-radius: 12px; position: relative; height: 280px;">
             <canvas id="trendChart"></canvas>
           </div>
 
@@ -103,8 +106,8 @@
     </div>
 
     <!-- Upload Modal Overlay -->
-    <div id="upload-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 100;">
-      <div class="glass-panel" style="width: 620px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+    <div id="upload-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); overflow: auto; z-index: 300;">
+      <div id="upload-modal-card" class="glass-panel" style="width: 620px; max-width: 90%; margin: 40px auto; padding: 32px; display: flex; flex-direction: column; gap: 24px; min-height: fit-content; transition: all 0.3s ease;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
           <h2 style="font-size: 18px; font-weight: 800;">Grab Company Assessments</h2>
           <button id="btn-close-upload" style="background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer;">&times;</button>
@@ -132,7 +135,7 @@
           </div>
 
           <!-- Add Another File Row button -->
-          <button type="button" id="btn-add-row" style="background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--panel-border); color: var(--text-secondary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; text-align: center;">
+          <button type="button" id="btn-add-row" style="background: rgba(0, 0, 0, 0.03); border: 1px dashed var(--panel-border); color: var(--text-secondary); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; text-align: center;">
             + Add Another Assessment Year
           </button>
 
@@ -143,11 +146,53 @@
           </div>
         </form>
 
-        <!-- Progress Spinner overlay inside modal -->
-        <div id="modal-spinner" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8, 9, 12, 0.9); border-radius: 16px;">
-          <div style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          <h3 style="font-size: 15px; font-weight: 700;" id="spinner-status">Waiting for browser sign-in...</h3>
-          <p style="color: var(--text-secondary); font-size: 12px; text-align: center; max-width: 390px;">Complete sign-in in the browser window. Keep this dashboard open while documents and comments are imported.</p>
+        <!-- Progress Notification (small banner at top) -->
+        <div id="modal-spinner" style="display: none; flex-direction: column; gap: 8px; padding: 12px 16px; margin-bottom: 16px; background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; flex-shrink: 0;"></div>
+            <div style="flex: 1;">
+              <h3 style="font-size: 13px; font-weight: 700; margin: 0;" id="spinner-status">Waiting for browser sign-in...</h3>
+              <p style="color: var(--text-secondary); font-size: 11px; margin: 0;">Complete sign-in in the mini window below, then keep this dashboard open while import completes.</p>
+        </div>
+
+        <!-- Full-page loading overlay (appears after sign-in) -->
+        <div id="full-page-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 99999; flex-direction: column; align-items: center; justify-content: center;">
+          <div style="width: 70px; height: 70px; border: 6px solid rgba(124,58,237,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 32px;"></div>
+          <h2 style="color: var(--primary); font-size: 24px; font-weight: 800; margin-bottom: 16px;">Waiting to Parse Assessment Info</h2>
+          <p style="color: var(--text-secondary); font-size: 16px; max-width: 500px; text-align: center; line-height: 1.6; margin-bottom: 32px;">
+            Please complete sign-in in the browser window. Once signed in, the browser will close automatically and we'll parse your assessment data.
+          </p>
+          <div id="loader-status" style="margin-top: 20px; font-size: 14px; color: var(--text-secondary);">Establishing connection...</div>
+        </div>
+
+        <!-- Continue button (appears after VNC connects) -->
+        <div id="continue-section" style="display: none; margin-top: 20px; text-align: center; padding: 16px; background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.15); border-radius: 8px;">
+          <p style="color: var(--primary); font-size: 14px; margin-bottom: 12px;">✅ VNC connected successfully!</p>
+          <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">Please complete sign-in in the browser above, then click "Continue" below.</p>
+          <button type="button" id="btn-continue-import" class="filter-btn active" style="background: var(--primary-gradient); border: none; color: #fff; padding: 10px 28px; font-weight: 700;">Continue to Import</button>
+        </div>
+
+      </div>
+    </div>
+
+        <!-- Browser View Container (noVNC iframe) -->
+        <div id="browser-view-container" style="display: none; flex-direction: column; gap: 12px; margin-top: 16px; pointer-events: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; pointer-events: auto;">
+            <h3 style="font-size: 14px; font-weight: 700; color: var(--text-primary);">Browser Sign-in</h3>
+            <button type="button" id="btn-close-browser" class="filter-btn" style="padding: 6px 12px; font-size: 12px;">Hide Browser</button>
+          </div>
+          
+          <!-- Container with overflow:hidden to crop iframe view -->
+          <!-- CSS-based centering: iframe is positioned absolutely at center, then scaled down -->
+          <div style="width: 100%; height: 600px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; background: #000;">
+            <!-- Iframe centered using CSS transforms -->
+            <iframe id="browser-iframe" 
+              src="/novnc-view/vnc_auto.html?autoconnect=true&amp;reconnect=true&amp;host=localhost&amp;port=6080&amp;password=nsKaZ1GLEPEzJa%2BSAhvw4D/VlweG4mcY&amp;scale=1.0" 
+              style="position: absolute; top: 50%; left: 50%; width: 1440px; height: 900px; border: none; transform: translate(-50%, -52%) scale(.92); transform-origin: center; pointer-events: auto;" 
+              frameborder="0" 
+              scrolling="no">
+            </iframe>
+          </div>
         </div>
 
       </div>
@@ -188,6 +233,16 @@
     
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+    
+    /* Elevated z-index for modal card when iframe is visible - expands vertically to contain browser */
+    #upload-modal-card.elevated-z {
+      z-index: 400;
+      position: relative;
+      height: auto !important;
+      min-height: fit-content !important;
+      margin: 40px auto !important;
+      padding-bottom: 40px !important;
     }
   </style>
 

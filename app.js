@@ -22,11 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseUpload = document.getElementById('btn-close-upload');
   const btnCancelUpload = document.getElementById('btn-cancel-upload');
   const uploadModal = document.getElementById('upload-modal');
+  const uploadModalCard = document.getElementById('upload-modal-card');
   const uploadForm = document.getElementById('upload-form');
   const uploadRowsContainer = document.getElementById('upload-rows-container');
   const btnAddRow = document.getElementById('btn-add-row');
   const modalSpinner = document.getElementById('modal-spinner');
   const spinnerStatus = document.getElementById('spinner-status');
+  const browserViewContainer = document.getElementById('browser-view-container');
+  const browserIframe = document.getElementById('browser-iframe');
+  const btnCloseBrowser = document.getElementById('btn-close-browser');
 
   // Load Portfolio Companies
   loadPortfolio();
@@ -104,7 +108,26 @@ document.addEventListener('DOMContentLoaded', () => {
     detailState.style.display = 'flex';
 
     activeName.textContent = p.name;
-    activeYearsDesc.innerHTML = `Assessment history: <strong>${p.years.join(', ')}</strong>`;
+    activeYearsDesc.innerHTML = `<span style="margin-right: 4px;">Assessment history:</span> ` + 
+      p.years.map(y => `<span style="background: rgba(0,0,0,0.05); border: 1px solid var(--panel-border); border-radius: 6px; padding: 2px 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; color: var(--text-primary);">${y} <button class="btn-delete-year" data-year="${y}" title="Delete Year ${y}" style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; line-height: 1; padding: 0;">&times;</button></span>`).join('');
+
+    // Attach event listeners for deleting specific years
+    activeYearsDesc.querySelectorAll('.btn-delete-year').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const yearToDelete = e.currentTarget.getAttribute('data-year');
+        if (!confirm(`Are you sure you want to delete the ${yearToDelete} assessment for ${p.name}?`)) return;
+        
+        try {
+          const res = await fetch(`/api/portcos?name=${encodeURIComponent(p.name)}&year=${encodeURIComponent(yearToDelete)}`, { method: 'DELETE' });
+          if (!res.ok) throw new Error(await res.text());
+          // Reload portfolio, keep current active portco if it still has years, else null
+          const stillHasYears = p.years.length > 1;
+          loadPortfolio(stillHasYears ? p.name : null);
+        } catch (err) {
+          alert('Error deleting year: ' + err.message);
+        }
+      });
+    });
 
     // Calculate score delta from first to last year
     if (p.years.length >= 2) {
@@ -117,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       activeSummaryBadge.style.display = 'inline-flex';
       activeSummaryBadge.className = `delta-badge ${diff >= 0 ? 'positive' : 'negative'}`;
-      activeSummaryBadge.innerHTML = `${arrow} ${diff === 0 ? '' : (diff > 0 ? '+' : '')}${diff}pt change (${yrFirst} → ${yrLast})`;
+      activeSummaryBadge.innerHTML = `${arrow} ${diff === 0 ? '' : (diff > 0 ? '+' : '')}${diff}pt (${yrFirst} → ${yrLast})`;
     } else {
       activeSummaryBadge.style.display = 'none';
     }
@@ -247,6 +270,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('click', (event) => {
+    const addYearButton = event.target.closest('#btn-add-year');
+    if (addYearButton && activePortco) {
+      event.preventDefault();
+      event.stopPropagation();
+      openModalForAddYear(activePortco.name);
+      return;
+    }
+
     const deleteButton = event.target.closest('#btn-delete-portco');
     if (!deleteButton) return;
 
@@ -288,12 +319,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Modal Toggle Event Handlers
   btnOpenUpload.addEventListener('click', () => {
+    document.getElementById('input-company-name').value = '';
+    document.getElementById('input-company-name').readOnly = false;
     uploadModal.style.display = 'flex';
   });
 
+  function openModalForAddYear(companyName) {
+    document.getElementById('input-company-name').value = companyName;
+    document.getElementById('input-company-name').readOnly = true;
+    uploadModal.style.display = 'flex';
+    // Focus the assessment code input of the first row
+    const firstCodeInput = uploadRowsContainer.querySelector('.assessment-code');
+    if (firstCodeInput) firstCodeInput.focus();
+  }
+
+  let activeImportController = null;
+
   const closeModal = () => {
+    // If an import is running, abort it to save server compute
+    if (activeImportController) {
+      activeImportController.abort();
+      activeImportController = null;
+    }
+    
     uploadModal.style.display = 'none';
     modalSpinner.style.display = 'none';
+    browserViewContainer.style.display = 'none';
+    uploadModalCard.classList.remove('elevated-z');
     uploadForm.reset();
     // Keep only one row
     const rows = uploadRowsContainer.querySelectorAll('.upload-row');
@@ -304,6 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnCloseUpload.addEventListener('click', closeModal);
   btnCancelUpload.addEventListener('click', closeModal);
+  
+    // Hide browser iframe when close button clicked
+  btnCloseBrowser.addEventListener('click', () => {
+    browserViewContainer.style.display = 'none';
+    uploadModalCard.classList.remove('elevated-z');
+  });
 
   // Add Another Year's Report row
   btnAddRow.addEventListener('click', () => {
@@ -357,16 +415,40 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Show processing status
+      // Show processing status (small notification at top)
     modalSpinner.style.display = 'flex';
 
+    // Show browser iframe for VNC view
+    browserViewContainer.style.display = 'flex';
+    uploadModalCard.classList.add('elevated-z');
+
+    // Force reload the iframe to ensure a fresh noVNC session without a black screen
+    const browserIframe = document.getElementById('browser-iframe');
+    if (browserIframe) {
+      // appending a dummy parameter ensures it forces a true reload
+      const currentSrc = browserIframe.src.split('&ts=')[0];
+      browserIframe.src = currentSrc + '&ts=' + Date.now();
+    }
+
     try {
-      spinnerStatus.textContent = "Waiting for browser sign-in and importing assessments...";
+      spinnerStatus.textContent = "Waiting for browser sign-in...";
+      // Update the notification message to tell user to login below
+      const notificationText = modalSpinner.querySelector('p');
+      if (notificationText) {
+        notificationText.textContent = "Complete sign-in in the mini window below, then keep this dashboard open while import completes.";
+      }
+      
+      activeImportController = new AbortController();
+      
       const response = await fetch('/api/portcos/grab', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ company_name: companyName, assessments })
+        body: JSON.stringify({ company_name: companyName, assessments }),
+        signal: activeImportController.signal
       });
+      
+      activeImportController = null;
+
       if (!response.ok) {
         const errMsg = await response.text();
         throw new Error(errMsg || 'Document grabber import failed');
@@ -386,8 +468,14 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(closeModal, 800);
 
     } catch (err) {
-      alert("Error: " + err.message);
+      activeImportController = null;
+      if (err.name === 'AbortError') {
+        console.log('Import aborted by user.');
+      } else {
+        alert("Error: " + err.message);
+      }
       modalSpinner.style.display = 'none';
+      browserViewContainer.style.display = 'none';
     }
   });
 });

@@ -2,17 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-color: #08090c;
-  --panel-bg: rgba(17, 22, 34, 0.65);
-  --panel-border: rgba(255, 255, 255, 0.08);
+  --bg-color: #ffffff;
+  --panel-bg: rgba(255, 255, 255, 0.85);
+  --panel-border: rgba(0, 0, 0, 0.05);
   --panel-border-hover: rgba(124, 58, 237, 0.3);
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
   --text-muted: #6b7280;
   
   /* Accent Colors */
-  --primary: #7c3aed;
-  --primary-gradient: linear-gradient(135deg, #7c3aed, #c084fc);
+  --primary: #0ea5e9;
+  --primary-gradient: linear-gradient(135deg, #0ea5e9, #38bdf8);
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.1);
   --danger: #f43f5e;
@@ -82,7 +82,7 @@ header {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
-  background: linear-gradient(to right, #fff, #a78bfa);
+  background: linear-gradient(to right, #0f172a, #0ea5e9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -162,7 +162,7 @@ header {
   font-size: 48px;
   font-weight: 800;
   line-height: 1;
-  background: linear-gradient(to bottom, #fff, #e2e8f0);
+  background: linear-gradient(to bottom, #0f172a, #0ea5e9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -325,6 +325,13 @@ header {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 10px rgba(124, 58, 237, 0.1);
+}
+
+.search-input[readonly] {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  border-color: rgba(255,255,255,0.02);
 }
 
 .search-icon {

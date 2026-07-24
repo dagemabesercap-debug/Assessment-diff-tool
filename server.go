@@ -181,6 +181,9 @@ func main() {
 	http.HandleFunc("/health/live", handleHealth)
 	http.HandleFunc("/health/ready", handleHealth)
 
+	// noVNC iframe endpoint - proxies to the internal websockify service
+	http.HandleFunc("/novnc-view/", handleNoVNCView)
+
 	http.Handle("/", http.FileServer(http.FS(staticFiles)))
 
 	server := &http.Server{
@@ -237,6 +240,7 @@ func handleDeletePortco(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing query parameter: name", http.StatusBadRequest)
 		return
 	}
+	year := strings.TrimSpace(r.URL.Query().Get("year"))
 
 	portcoDir, err := portcoDataDir(companyName)
 	if err != nil {
@@ -259,6 +263,40 @@ func handleDeletePortco(w http.ResponseWriter, r *http.Request) {
 	}
 	if foundIdx == -1 {
 		http.Error(w, "Portfolio company not found", http.StatusNotFound)
+		return
+	}
+
+	if year != "" {
+		p := &portcos[foundIdx]
+		yearIdx := -1
+		for i, y := range p.Years {
+			if y == year {
+				yearIdx = i
+				break
+			}
+		}
+		if yearIdx == -1 {
+			http.Error(w, "Year not found in portfolio company", http.StatusNotFound)
+			return
+		}
+
+		p.Years = append(p.Years[:yearIdx], p.Years[yearIdx+1:]...)
+		delete(p.Scores, year)
+		delete(p.CategoryScores, year)
+
+		if err := savePortcos(portcos); err != nil {
+			http.Error(w, "Failed saving portfolio database: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		yearDir := filepath.Join(portcoDir, year)
+		if err := os.RemoveAll(yearDir); err != nil {
+			http.Error(w, "Deleted portfolio metadata but failed removing year files: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"success":true}`))
 		return
 	}
 
@@ -477,7 +515,7 @@ func handleGrabAssessments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	grabbed, err := grabAssessments(portcoDir, payload.Assessments)
+	grabbed, err := grabAssessments(r.Context(), portcoDir, payload.Assessments)
 	if err != nil {
 		http.Error(w, "Document grabber failed: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -864,4 +902,78 @@ func calculateDynamicScore(q Question) float64 {
 	}
 
 	return (float64(checkedCount) / float64(len(checkableOpts))) * 5.0
+}
+
+// handleNoVNCView proxies requests to the internal websockify service
+// and injects iframe-friendly headers to allow embedding the VNC view
+func handleNoVNCView(w http.ResponseWriter, r *http.Request) {
+	// Allow iframe embedding from same origin
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self'")
+
+	// Construct the target URL
+	targetPath := "/"
+	if r.URL.Path != "/novnc-view" {
+		// Forward the path after /novnc-view to the VNC service
+		targetPath = strings.TrimPrefix(r.URL.Path, "/novnc-view")
+	}
+	
+	proxyURL := "http://localhost:6080" + targetPath
+	
+	log.Printf("Proxying VNC request: %s %s -> %s", r.Method, r.URL.Path, proxyURL)
+
+	// Create proxy request
+	var body io.Reader
+	if r.Body != nil {
+		body = r.Body
+	}
+	
+	proxyReq, err := http.NewRequest(r.Method, proxyURL, body)
+	if err != nil {
+		http.Error(w, "Failed to create proxy request: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Copy essential headers only
+	if r.Host != "" {
+		proxyReq.Host = "localhost:6080"
+	}
+	
+	// Copy specific headers that are safe to forward
+	for _, header := range []string{"Accept", "Accept-Encoding", "Accept-Language", "User-Agent"} {
+		if value := r.Header.Get(header); value != "" {
+			proxyReq.Header.Set(header, value)
+		}
+	}
+
+	// Make the request to websockify
+	client := &http.Client{Timeout: 30 * time.Second}
+	proxyResp, err := client.Do(proxyReq)
+	if err != nil {
+		http.Error(w, "Failed to connect to VNC service: "+err.Error(), http.StatusBadGateway)
+		return
+	}
+	defer proxyResp.Body.Close()
+
+	log.Printf("VNC proxy response: %d %s", proxyResp.StatusCode, proxyURL)
+
+	// Copy response headers
+	for key, values := range proxyResp.Header {
+		// Skip hop-by-hop headers
+		if key == "Transfer-Encoding" || key == "Connection" {
+			continue
+		}
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+
+	// Ensure iframe-friendly headers are set
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+	
+	w.WriteHeader(proxyResp.StatusCode)
+	
+	if _, err := io.Copy(w, proxyResp.Body); err != nil {
+		log.Printf("Error copying VNC response body: %v", err)
+	}
 }
