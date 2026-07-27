@@ -93,5 +93,16 @@
 
   <!-- Load main app logic -->
   <script src="diff_app.js?v=20260715-document-grabber"></script>
+
+  <script>
+    function navigateDashboard(e) {
+      e.preventDefault();
+      const isIpOrLocalhost = window.location.hostname === 'localhost' || 
+                              /^(\d{1,3}\.){3}\d{1,3}$/.test(window.location.hostname);
+      window.location.href = isIpOrLocalhost ? 
+        window.location.protocol + '//' + window.location.hostname + ':8000' : 
+        '/';
+    }
+  </script>
 </body>
 </html>
