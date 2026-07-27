@@ -193,7 +193,7 @@
           <div style="width: 100%; height: 600px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; background: #000;">
             <!-- Iframe centered using CSS transforms -->
             <iframe id="browser-iframe" 
-              src="/novnc-view/vnc_auto.html?autoconnect=true&amp;reconnect=true&amp;host=localhost&amp;port=6080&amp;password=nsKaZ1GLEPEzJa%2BSAhvw4D/VlweG4mcY&amp;scale=1.0" 
+              src="" 
               style="position: absolute; top: 50%; left: 50%; width: 1440px; height: 900px; border: none; transform: translate(-50%, -52%) scale(.92); transform-origin: center; pointer-events: auto;" 
               frameborder="0" 
               scrolling="no">
@@ -263,6 +263,18 @@
         window.location.protocol + '//' + window.location.hostname + ':8000' : 
         '/';
     }
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const iframe = document.getElementById("browser-iframe");
+      const isProxy = window.location.pathname.startsWith('/diff');
+      
+      const basePath = isProxy ? "/diff/novnc-view" : "/novnc-view";
+      const wsPath = isProxy ? "diff/novnc-view/websockify" : "novnc-view/websockify";
+      
+      iframe.src = basePath + "/vnc_auto.html?autoconnect=true&reconnect=true&path=" + encodeURIComponent(wsPath) + "&password=nsKaZ1GLEPEzJa%2BSAhvw4D/VlweG4mcY&scale=1.0";
+    });
   </script>
 </body>
 </html>
