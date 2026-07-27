@@ -11,6 +11,8 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -923,69 +925,18 @@ func handleNoVNCView(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
 	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self'")
 
-	// Construct the target URL
-	targetPath := "/"
+	target, _ := url.Parse("http://localhost:6080")
+	proxy := httputil.NewSingleHostReverseProxy(target)
+
+	// Update the request path before proxying
+	originalPath := r.URL.Path
 	if r.URL.Path != "/novnc-view" {
-		// Forward the path after /novnc-view to the VNC service
-		targetPath = strings.TrimPrefix(r.URL.Path, "/novnc-view")
-	}
-	
-	proxyURL := "http://localhost:6080" + targetPath
-	
-	log.Printf("Proxying VNC request: %s %s -> %s", r.Method, r.URL.Path, proxyURL)
-
-	// Create proxy request
-	var body io.Reader
-	if r.Body != nil {
-		body = r.Body
-	}
-	
-	proxyReq, err := http.NewRequest(r.Method, proxyURL, body)
-	if err != nil {
-		http.Error(w, "Failed to create proxy request: "+err.Error(), http.StatusInternalServerError)
-		return
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/novnc-view")
+	} else {
+		r.URL.Path = "/"
 	}
 
-	// Copy essential headers only
-	if r.Host != "" {
-		proxyReq.Host = "localhost:6080"
-	}
-	
-	// Copy specific headers that are safe to forward
-	for _, header := range []string{"Accept", "Accept-Encoding", "Accept-Language", "User-Agent"} {
-		if value := r.Header.Get(header); value != "" {
-			proxyReq.Header.Set(header, value)
-		}
-	}
+	log.Printf("Proxying VNC request: %s %s -> http://localhost:6080%s", r.Method, originalPath, r.URL.Path)
 
-	// Make the request to websockify
-	client := &http.Client{Timeout: 30 * time.Second}
-	proxyResp, err := client.Do(proxyReq)
-	if err != nil {
-		http.Error(w, "Failed to connect to VNC service: "+err.Error(), http.StatusBadGateway)
-		return
-	}
-	defer proxyResp.Body.Close()
-
-	log.Printf("VNC proxy response: %d %s", proxyResp.StatusCode, proxyURL)
-
-	// Copy response headers
-	for key, values := range proxyResp.Header {
-		// Skip hop-by-hop headers
-		if key == "Transfer-Encoding" || key == "Connection" {
-			continue
-		}
-		for _, value := range values {
-			w.Header().Add(key, value)
-		}
-	}
-
-	// Ensure iframe-friendly headers are set
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
-	
-	w.WriteHeader(proxyResp.StatusCode)
-	
-	if _, err := io.Copy(w, proxyResp.Body); err != nil {
-		log.Printf("Error copying VNC response body: %v", err)
-	}
+	proxy.ServeHTTP(w, r)
 }
